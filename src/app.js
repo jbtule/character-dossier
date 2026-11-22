@@ -1,5 +1,5 @@
 // App shell: system picker, saved characters, import/export, and edit handling.
-import { blankCharacter, blankItem, normalizeCharacter, isCareerSkill } from "./engine/sheet.js";
+import { blankCharacter, blankItem, normalizeCharacter } from "./engine/sheet.js";
 import { renderSheet, refreshOutputs, esc } from "./render.js";
 import * as store from "./storage.js";
 
@@ -109,19 +109,12 @@ function onInput(e) {
   if ("field" in d) {
     const f = ctx.spec.fields?.[d.field];
     ch[d.field] = f?.type === "number" ? parseNum(t.value) : t.value;
-    if (f?.type === "ref") {
-      // Clear ref fields that depend on this one (e.g. specialization when career changes).
-      for (const [id, other] of Object.entries(ctx.spec.fields)) if (other.options?.includes(`{${d.field}}`)) ch[id] = "";
-      structural = true;
-    }
     if (d.field === "name") renderToolbar();
   } else if ("char" in d) {
     ch.characteristics[d.char] = parseNum(t.value);
   } else if ("career" in d) {
-    ch.careerSkillOverrides[d.career] = t.checked;
-    // Drop the override if it now matches the default.
-    delete ch.careerSkillOverrides[d.career];
-    if (isCareerSkill(ctx.spec, ch, d.career) !== t.checked) ch.careerSkillOverrides[d.career] = t.checked;
+    ch.careerSkills = ch.careerSkills.filter((id) => id !== d.career);
+    if (t.checked) ch.careerSkills.push(d.career);
   } else if ("list" in d) {
     const f = ctx.spec.lists[d.list].fields.find((x) => x.id === d.f);
     const item = ch.lists[d.list][+d.i];

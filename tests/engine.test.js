@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {
-  blankCharacter, normalizeCharacter, computeSheet, evaluateInSheet, skillPool, refOptions,
+  blankCharacter, normalizeCharacter, computeSheet, evaluateInSheet, trackerMax, skillPool,
   isCareerSkill, derivedOrder, interpolate,
 } from "../src/engine/sheet.js";
 
@@ -17,8 +17,6 @@ const value = (sheet, id) => {
 test("sample character: derived values", () => {
   const sheet = computeSheet(eote, sample);
   assert.deepEqual(sheet.errors, []);
-  assert.equal(value(sheet, "woundThreshold"), 12);
-  assert.equal(value(sheet, "strainThreshold"), 14);
   assert.equal(value(sheet, "soak"), 4);
   assert.equal(value(sheet, "encumbrance"), 8);
   assert.equal(value(sheet, "encumbranceThreshold"), 7);
@@ -35,34 +33,27 @@ test("sample character: dice pools", () => {
 
 test("sample character: trackers, meter and note text", () => {
   const sheet = computeSheet(eote, sample);
-  assert.equal(evaluateInSheet(sheet, "woundThreshold").value, 12);
+  const tracker = (id) => trackerMax(eote, sample, sheet, eote.trackers.find((t) => t.id === id));
+  assert.deepEqual(tracker("wounds"), { value: 12, status: "ok" });
+  assert.deepEqual(tracker("strain"), { value: 14, status: "ok" });
   assert.equal(interpolate(eote.lists.gear.meter.overNote, sheet), "Add 1 setback to Agility and Brawn checks.");
 });
 
-test("career skills come from career and specialization, with overrides", () => {
-  assert.equal(isCareerSkill(eote, sample, "computers"), true);
-  assert.equal(isCareerSkill(eote, sample, "underworld"), true); // specialization only
-  assert.equal(isCareerSkill(eote, sample, "charm"), false);
-  const overridden = { ...sample, careerSkillOverrides: { charm: true, computers: false } };
-  assert.equal(isCareerSkill(eote, overridden, "charm"), true);
-  assert.equal(isCareerSkill(eote, overridden, "computers"), false);
+test("career skills are stored on the character", () => {
+  assert.equal(isCareerSkill(sample, "computers"), true);
+  assert.equal(isCareerSkill(sample, "charm"), false);
+  assert.equal(isCareerSkill(blankCharacter(eote), "computers"), false);
 });
 
-test("ref options: specializations depend on the chosen career", () => {
-  const blank = blankCharacter(eote);
-  assert.deepEqual(refOptions(eote, blank, "specialization"), []);
-  assert.deepEqual(refOptions(eote, { ...blank, career: "technician" }, "specialization"), [{ id: "slicer", label: "Slicer" }]);
-  assert.deepEqual(refOptions(eote, blank, "species"), [{ id: "twilek", label: "Twi'lek" }]);
-});
-
-test("blank character: empty, and formulas waiting on species are pending, not errors", () => {
+test("blank character: every field empty, nothing errors", () => {
   const blank = blankCharacter(eote);
   assert.equal(blank.system, "eote");
-  assert.equal(blank.name, "");
+  for (const [id, f] of Object.entries(eote.fields)) assert.equal(blank[id], f.type === "number" ? null : "", id);
+  assert.deepEqual(blank.careerSkills, []);
   assert.deepEqual(blank.lists.weapons, []);
   const sheet = computeSheet(eote, blank);
   assert.deepEqual(sheet.errors, []);
-  assert.equal(sheet.derived.woundThreshold.status, "pending");
+  assert.equal(trackerMax(eote, blank, sheet, eote.trackers[0]).status, "unset");
   assert.equal(value(sheet, "soak"), 0);
   assert.equal(value(sheet, "encumbranceThreshold"), 5);
   assert.deepEqual(skillPool(eote, blank, "computers"), { proficiency: 0, ability: 0 });
@@ -70,13 +61,19 @@ test("blank character: empty, and formulas waiting on species are pending, not e
 
 test("every spec formula compiles and evaluates without errors", () => {
   const sheet = computeSheet(eote, sample);
-  for (const t of eote.trackers) assert.equal(evaluateInSheet(sheet, t.max).status, "ok", t.id);
+  for (const t of eote.trackers) assert.equal(trackerMax(eote, sample, sheet, t).status, "ok", t.id);
   for (const [id, list] of Object.entries(eote.lists)) {
     if (list.meter) {
       assert.equal(evaluateInSheet(sheet, list.meter.value).status, "ok", `${id} meter value`);
       assert.equal(evaluateInSheet(sheet, list.meter.max).status, "ok", `${id} meter max`);
     }
   }
+});
+
+test("number fields are available to formulas", () => {
+  const spec = { lists: {}, characteristics: [{ id: "brawn" }], fields: { bonus: { type: "number" } }, derived: { total: { formula: "brawn + bonus" } } };
+  assert.equal(computeSheet(spec, { characteristics: { brawn: 2 }, bonus: 3, lists: {} }).derived.total.value, 5);
+  assert.equal(computeSheet(spec, { characteristics: { brawn: 2 }, bonus: null, lists: {} }).derived.total.value, 2);
 });
 
 test("derived cycles are reported", () => {

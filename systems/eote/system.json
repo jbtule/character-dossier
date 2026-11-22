@@ -2,16 +2,18 @@
   "id": "eote",
   "name": "Star Wars: Edge of the Empire",
   "specVersion": 1,
-  "_comment_fields": "Top-level character fields. type: text | number | longtext | ref. A ref field picks a key from the spec object at 'options', a dot path that may use {fieldId} to depend on another field. The chosen entry is available in formulas under the field id (e.g. species.woundBase).",
+  "_comment_fields": "Top-level character fields: text | number | longtext. Number fields are available in formulas by id (unset = 0).",
   "fields": {
     "name": {"label": "Name", "type": "text"},
-    "species": {"label": "Species", "type": "ref", "options": "species"},
-    "career": {"label": "Career", "type": "ref", "options": "careers"},
-    "specialization": {"label": "Specialization", "type": "ref", "options": "careers.{career}.specializations"},
+    "species": {"label": "Species", "type": "text"},
+    "career": {"label": "Career", "type": "text"},
+    "specialization": {"label": "Specialization", "type": "text"},
     "player": {"label": "Player", "type": "text"},
     "xpTotal": {"label": "Total XP", "type": "number"},
     "xpAvailable": {"label": "Available XP", "type": "number"},
     "credits": {"label": "Credits", "type": "number"},
+    "woundThreshold": {"label": "Wound threshold", "type": "number"},
+    "strainThreshold": {"label": "Strain threshold", "type": "number"},
     "defenseRanged": {"label": "Def. ranged", "type": "number"},
     "defenseMelee": {"label": "Def. melee", "type": "number"},
     "motivation": {"label": "Motivation", "type": "longtext"},
@@ -70,54 +72,17 @@
   ],
   "_comment_skillRoll": "Evaluated per skill with context { characteristic, rank }. Each key is a die id from 'dice' and the result is how many of that die to show.",
   "skillRoll": {"proficiency": "min(characteristic, rank)", "ability": "max(characteristic, rank) - min(characteristic, rank)"},
-  "species": {
-    "twilek": {
-      "label": "Twi'lek",
-      "characteristics": {"brawn": 1, "agility": 2, "intellect": 2, "cunning": 2, "willpower": 2, "presence": 3},
-      "woundBase": 10,
-      "strainBase": 11,
-      "startingXp": 100,
-      "abilities": [
-        {"name": "Bonus skill", "effect": "Begins with one rank in Charm or Deception (max rank 2 at creation)."},
-        {
-          "name": "Desert Dwellers",
-          "page": 52,
-          "effect": "Remove a setback die imposed by arid or hot environmental conditions."
-        }
-      ]
-    }
-  },
-  "careers": {
-    "technician": {
-      "label": "Technician",
-      "freeRanks": 4,
-      "skills": [
-        "astrogation",
-        "computers",
-        "coordination",
-        "discipline",
-        "outerRim",
-        "mechanics",
-        "perception",
-        "pilotingPlanetary"
-      ],
-      "specializations": {"slicer": {"label": "Slicer", "freeRanks": 2, "skills": ["computers", "education", "underworld", "stealth"]}}
-    }
-  },
-  "_comment_careerSkills": "A skill is a career skill if it appears in the 'skills' array of any of these chosen ref entries. Characters can override per skill.",
-  "careerSkills": {"from": ["career", "specialization"], "key": "skills"},
-  "_comment_derived": "Filtrex expressions. Context: every characteristic id, every derived id already computed, 'species' (with dot access enabled), and the extra function sumOf(listId, fieldOrItemFormula).",
+  "_comment_derived": "Filtrex expressions. Context: every characteristic id, every number field, every derived id already computed, and the extra function sumOf(listId, fieldOrItemFormula).",
   "derived": {
-    "woundThreshold": {"label": "Wound threshold", "formula": "species.woundBase + brawn"},
-    "strainThreshold": {"label": "Strain threshold", "formula": "species.strainBase + willpower"},
     "soak": {"label": "Soak", "formula": "brawn + sumOf(\"gear\", \"wornSoak\")"},
     "encumbrance": {"label": "Encumbrance", "formula": "sumOf(\"gear\", \"effectiveEnc\")"},
     "encumbranceThreshold": {"label": "Encumbrance threshold", "formula": "5 + brawn"},
     "encumbranceOver": {"label": "Over by", "formula": "max(0, encumbrance - encumbranceThreshold)"}
   },
+  "_comment_trackers": "Current value is stored on the character. 'maxField' is a number field the player fills in; 'max' is a formula instead.",
   "trackers": [
-    {"id": "wounds", "label": "Wounds", "max": "woundThreshold"},
-    {"id": "strain", "label": "Strain", "max": "strainThreshold"}
+    {"id": "wounds", "label": "Wounds", "maxField": "woundThreshold"},
+    {"id": "strain", "label": "Strain", "maxField": "strainThreshold"}
   ],
   "lists": {
     "weapons": {
@@ -191,7 +156,7 @@
     },
     {"type": "characteristics", "display": "dials", "span": "half"},
     {"type": "trackers", "label": "Condition", "extra": ["soak", "defenseRanged", "defenseMelee"], "span": "half"},
-    {"type": "skills", "columns": [["General"], ["Combat", "Knowledge"]], "span": "full"},
+    {"type": "skills", "columns": [["General"], ["Combat", "Knowledge"]], "span": "full", "careerSkills": true},
     {"type": "list", "list": "weapons", "span": "half"},
     {"type": "list", "list": "talents", "span": "half"},
     {"type": "list", "list": "gear", "span": "half"},

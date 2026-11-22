@@ -1,34 +1,6 @@
 // Game-agnostic sheet logic: everything game-specific comes from the system spec.
 import { evaluate, identifiers } from "./formula.js";
 
-/** Read a dot path like "careers.{career}.specializations" from the spec, filling {fieldId} from the character. */
-export function resolvePath(spec, character, path) {
-  let missing = false;
-  const filled = path.replace(/\{(\w+)\}/g, (_, id) => {
-    const v = character[id];
-    if (v == null || v === "") missing = true;
-    return v ?? "";
-  });
-  if (missing) return undefined;
-  return filled.split(".").reduce((obj, key) => (obj == null ? undefined : obj[key]), spec);
-}
-
-/** Choices for a ref field: [{ id, label }]. Empty when it depends on a field that isn't set yet. */
-export function refOptions(spec, character, fieldId) {
-  const field = spec.fields?.[fieldId];
-  const source = field?.type === "ref" ? resolvePath(spec, character, field.options) : undefined;
-  if (!source || typeof source !== "object") return [];
-  return Object.entries(source).map(([id, entry]) => ({ id, label: entry?.label ?? id }));
-}
-
-/** The spec entry a ref field points at, or undefined if unset or invalid. */
-export function refEntry(spec, character, fieldId) {
-  const field = spec.fields?.[fieldId];
-  const id = character[fieldId];
-  if (field?.type !== "ref" || id == null || id === "") return undefined;
-  return resolvePath(spec, character, field.options)?.[id];
-}
-
 function defaultFor(type) {
   if (type === "number") return null;
   if (type === "bool") return false;
@@ -41,7 +13,7 @@ export function blankCharacter(spec) {
   for (const [id, f] of Object.entries(spec.fields ?? {})) ch[id] = defaultFor(f.type);
   ch.characteristics = Object.fromEntries((spec.characteristics ?? []).map((c) => [c.id, null]));
   ch.skills = {};
-  ch.careerSkillOverrides = {};
+  ch.careerSkills = [];
   ch.trackers = Object.fromEntries((spec.trackers ?? []).map((t) => [t.id, 0]));
   ch.lists = Object.fromEntries(Object.keys(spec.lists ?? {}).map((id) => [id, []]));
   return ch;
@@ -60,7 +32,7 @@ export function normalizeCharacter(spec, character) {
   ch.trackers = { ...blank.trackers, ...(character.trackers ?? {}) };
   ch.lists = { ...blank.lists, ...(character.lists ?? {}) };
   ch.skills ??= {};
-  ch.careerSkillOverrides ??= {};
+  if (!Array.isArray(ch.careerSkills)) ch.careerSkills = [];
   return ch;
 }
 
@@ -98,8 +70,8 @@ export function computeItems(spec, character) {
 export function derivedOrder(spec) {
   const derived = spec.derived ?? {};
   const ids = Object.keys(derived);
-  const deps = Object.fromEntries(ids.map((id) => [id, [...identifiers(derived[id].formula)].filter((n) => n !== id && n in derived)]));
   for (const id of ids) if (identifiers(derived[id].formula).has(id)) throw new Error(`Derived value "${id}" refers to itself`);
+  const deps = Object.fromEntries(ids.map((id) => [id, [...identifiers(derived[id].formula)].filter((n) => n in derived)]));
   const order = [];
   const state = {};
   const visit = (id, path) => {
@@ -114,25 +86,19 @@ export function derivedOrder(spec) {
   return order;
 }
 
-function refFieldIds(spec) {
-  return Object.entries(spec.fields ?? {}).filter(([, f]) => f.type === "ref").map(([id]) => id);
-}
-
 /**
  * Evaluate the whole sheet.
- * derived[id] = { value, status: "ok" | "pending" | "error", error? }
- * "pending" means the formula needs a ref field (like species) that hasn't been chosen yet. It's not a spec bug.
+ * Formula context: every characteristic and every number field (unset = 0), then derived values in order.
+ * derived[id] = { value, status: "ok" | "error", error? }
  */
 export function computeSheet(spec, character) {
   const errors = [];
   const { items, errors: itemErrors } = computeItems(spec, character);
   errors.push(...itemErrors);
 
-  const refs = refFieldIds(spec);
-  const unsetRefs = new Set(refs.filter((id) => refEntry(spec, character, id) === undefined));
   const ctx = {};
+  for (const [id, f] of Object.entries(spec.fields ?? {})) if (f.type === "number") ctx[id] = num(character[id]);
   for (const c of spec.characteristics ?? []) ctx[c.id] = num(character.characteristics?.[c.id]);
-  for (const id of refs) if (!unsetRefs.has(id)) ctx[id] = refEntry(spec, character, id);
 
   const sumOf = (listId, field) => {
     if (!(listId in items)) throw new Error(`sumOf: no list "${listId}"`);
@@ -148,12 +114,6 @@ export function computeSheet(spec, character) {
   }
   for (const id of order) {
     const expr = spec.derived[id].formula;
-    const used = identifiers(expr);
-    const waitingOn = [...used].filter((n) => unsetRefs.has(n) || derived[n]?.status === "pending");
-    if (waitingOn.length) {
-      derived[id] = { value: null, status: "pending", waitingOn };
-      continue;
-    }
     const r = evaluate(expr, ctx, { sumOf });
     if (r.error) {
       derived[id] = { value: null, status: "error", error: r.error };
@@ -167,12 +127,22 @@ export function computeSheet(spec, character) {
   return { items, derived, errors, context: ctx };
 }
 
-/** Evaluate a formula in the derived context (tracker max, meter value/max). */
+/** Evaluate a formula in the derived context (meter value/max, tracker max formulas). */
 export function evaluateInSheet(sheet, expr) {
-  const used = identifiers(expr);
-  if ([...used].some((n) => sheet.derived[n]?.status === "pending")) return { value: null, status: "pending" };
   const r = evaluate(expr, sheet.context);
   return r.error ? { value: null, status: "error", error: r.error } : { value: r.value, status: "ok" };
+}
+
+/**
+ * A tracker's maximum. `maxField` names a number field the player fills in (shown as "—" until set);
+ * `max` is a formula.
+ */
+export function trackerMax(spec, character, sheet, tracker) {
+  if (tracker.maxField) {
+    const v = character[tracker.maxField];
+    return v == null || v === "" ? { value: null, status: "unset" } : { value: num(v), status: "ok" };
+  }
+  return evaluateInSheet(sheet, tracker.max);
 }
 
 /** Dice pool for a characteristic value and rank: { dieId: count }. */
@@ -193,22 +163,7 @@ export function skillPool(spec, character, skillId) {
   return dicePool(spec, character.characteristics?.[skill.characteristic], character.skills?.[skillId]);
 }
 
-/** Career skills from the chosen ref entries, before per-character overrides. */
-export function baseCareerSkills(spec, character) {
-  const rule = spec.careerSkills;
-  const out = new Set();
-  if (!rule) return out;
-  for (const fieldId of rule.from ?? []) {
-    const entry = refEntry(spec, character, fieldId);
-    for (const s of entry?.[rule.key ?? "skills"] ?? []) out.add(s);
-  }
-  return out;
-}
-
-export function isCareerSkill(spec, character, skillId) {
-  const o = character.careerSkillOverrides?.[skillId];
-  return typeof o === "boolean" ? o : baseCareerSkills(spec, character).has(skillId);
-}
+export const isCareerSkill = (character, skillId) => (character.careerSkills ?? []).includes(skillId);
 
 /** Fill "{derivedId}" placeholders in text. */
 export function interpolate(text, sheet) {

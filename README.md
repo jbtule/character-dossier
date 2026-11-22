@@ -36,8 +36,6 @@ Expected for the sample character:
 
 | Value | Expected |
 |---|---|
-| Wound threshold | 12 |
-| Strain threshold | 14 |
 | Soak | 4 |
 | Encumbrance | 8 / 7, over by 1 |
 | Computers | 1 proficiency, 3 ability |

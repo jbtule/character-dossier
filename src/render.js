@@ -2,7 +2,7 @@
 // Inputs carry data-* attributes that app.js uses to write edits back to the character.
 // Computed values are wrapped in [data-out] so they can refresh without re-rendering inputs.
 import {
-  computeSheet, evaluateInSheet, skillPool, refOptions, isCareerSkill, interpolate,
+  computeSheet, evaluateInSheet, trackerMax, skillPool, isCareerSkill, interpolate,
 } from "./engine/sheet.js";
 
 export const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -44,13 +44,6 @@ function panel(sec, inner, title) {
 function fieldInput(ctx, fieldId, extra = {}) {
   const f = ctx.spec.fields?.[fieldId] ?? { type: "text", label: fieldId };
   const v = ctx.character[fieldId];
-  if (f.type === "ref") {
-    const opts = refOptions(ctx.spec, ctx.character, fieldId);
-    const dependsOn = /\{(\w+)\}/.exec(f.options ?? "")?.[1];
-    const disabled = !opts.length;
-    const hint = disabled && dependsOn ? `Choose ${ctx.spec.fields?.[dependsOn]?.label ?? dependsOn} first` : "Choose…";
-    return `<select ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, disabled, ...extra })}><option value="">${esc(hint)}</option>${opts.map((o) => `<option value="${esc(o.id)}" ${o.id === v ? "selected" : ""}>${esc(o.label)}</option>`).join("")}</select>`;
-  }
   if (f.type === "longtext") return `<textarea ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, ...extra })}>${esc(v)}</textarea>`;
   return `<input ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, value: f.type === "number" ? numStr(v) : (v ?? ""), inputmode: f.type === "number" ? "numeric" : null, ...extra })}>`;
 }
@@ -93,7 +86,7 @@ const WIDGETS = {
   },
 
   trackers(ctx, sec) {
-    const gauges = (ctx.spec.trackers ?? []).map((t) => `<div class="g"><b>${esc(t.label)}</b><div data-out="tracker:${esc(t.id)}" class="tw">${OUTPUTS.tracker(ctx, t.id)}</div><span class="ctl"><button class="btn" ${attrs({ "data-tracker": t.id, "data-d": -1, "aria-label": `${t.label} down` })}>−</button><span class="n" data-out="trackerN:${esc(t.id)}">${OUTPUTS.trackerN(ctx, t.id)}</span><button class="btn" ${attrs({ "data-tracker": t.id, "data-d": 1, "aria-label": `${t.label} up` })}>+</button></span></div>`).join("");
+    const gauges = (ctx.spec.trackers ?? []).map((t) => `<div class="g"><b>${esc(t.label)}</b><div data-out="tracker:${esc(t.id)}" class="tw">${OUTPUTS.tracker(ctx, t.id)}</div><span class="ctl"><button class="btn" ${attrs({ "data-tracker": t.id, "data-d": -1, "aria-label": `${t.label} down` })}>−</button><span class="n"><span data-out="trackerN:${esc(t.id)}">${OUTPUTS.trackerN(ctx, t.id)}</span> / ${t.maxField ? fieldInput(ctx, t.maxField, { class: "max", "aria-label": label(ctx, t.maxField), placeholder: "—" }) : `<span data-out="trackerMax:${esc(t.id)}">${OUTPUTS.trackerMax(ctx, t.id)}</span>`}</span><button class="btn" ${attrs({ "data-tracker": t.id, "data-d": 1, "aria-label": `${t.label} up` })}>+</button></span></div>`).join("");
     const extra = sec.extra?.length ? `<div class="mini">${sec.extra.map((id) => statBox(ctx, id)).join("")}</div>` : "";
     return panel(sec, `<div class="gauges">${gauges}</div>${extra}`, sec.label ?? "Trackers");
   },
@@ -104,7 +97,8 @@ const WIDGETS = {
     const abbr = Object.fromEntries((spec.characteristics ?? []).map((c) => [c.id, c.abbr ?? c.label]));
     const row = (s) => {
       const r = character.skills?.[s.id] ?? 0;
-      return `<div class="sk"><input type="checkbox" class="car" ${attrs({ "data-career": s.id, checked: isCareerSkill(spec, character, s.id), "aria-label": `${s.label} is a career skill` })}>
+      const car = sec.careerSkills ? `<input type="checkbox" class="car" ${attrs({ "data-career": s.id, checked: isCareerSkill(character, s.id), "aria-label": `${s.label} is a career skill` })}>` : "<span></span>";
+      return `<div class="sk">${car}
         <span class="nm">${esc(s.label)}<em>${esc(abbr[s.characteristic] ?? "")}</em></span>
         <span class="pips">${Array.from({ length: max }, (_, i) => `<button ${attrs({ "data-rank": s.id, "data-r": i + 1, class: i < r ? "on" : null, "aria-label": `${s.label} rank ${i + 1}`, "aria-pressed": String(i < r) })}></button>`).join("")}</span>
         <span class="pool" data-out="pool:${esc(s.id)}">${OUTPUTS.pool(ctx, s.id)}</span></div>`;
@@ -112,7 +106,7 @@ const WIDGETS = {
     const groupHtml = (g) => `<div class="grp">${esc(g)}</div>` + (spec.skills ?? []).filter((s) => s.group === g).map(row).join("");
     const columns = sec.columns ?? [spec.skillGroups ?? []];
     const usedDice = Object.keys(spec.skillRoll ?? {});
-    const key = `<div class="key">${spec.careerSkills ? '<span><input type="checkbox" class="car" checked disabled aria-hidden="true">career skill</span>' : ""}${usedDice.map((d) => `<span>${dice(ctx, { [d]: 1 }).replace(/<span class="sr">.*?<\/span>/, "")}${esc(spec.dice?.[d]?.label ?? d)}</span>`).join("")}</div>`;
+    const key = `<div class="key">${sec.careerSkills ? '<span><input type="checkbox" class="car" checked disabled aria-hidden="true">career skill</span>' : ""}${usedDice.map((d) => `<span>${dice(ctx, { [d]: 1 }).replace(/<span class="sr">.*?<\/span>/, "")}${esc(spec.dice?.[d]?.label ?? d)}</span>`).join("")}</div>`;
     const inner = `<div class="head"><h2>${esc(sec.label ?? "Skills")}</h2>${key}</div><div class="skills" style="--cols:${columns.length}">${columns.map((col) => `<div>${col.map(groupHtml).join("")}</div>`).join("")}</div>`;
     return panel(sec, inner);
   },
@@ -196,14 +190,15 @@ const OUTPUTS = {
   },
   tracker(ctx, id) {
     const t = ctx.spec.trackers.find((x) => x.id === id);
-    const max = evaluateInSheet(ctx.sheet, t.max);
+    const max = trackerMax(ctx.spec, ctx.character, ctx.sheet, t);
     const cur = ctx.character.trackers?.[id] ?? 0;
-    const n = max.status === "ok" ? Math.max(1, Math.min(60, max.value)) : 10;
+    const n = max.status === "ok" && max.value > 0 ? Math.min(60, max.value) : 10;
     return `<div class="bar" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<i class="${i < cur ? "on" : ""}"></i>`).join("")}</div>`;
   },
-  trackerN(ctx, id) {
+  trackerN: (ctx, id) => esc(ctx.character.trackers?.[id] ?? 0),
+  trackerMax(ctx, id) {
     const t = ctx.spec.trackers.find((x) => x.id === id);
-    return `${esc(ctx.character.trackers?.[id] ?? 0)} / ${show(evaluateInSheet(ctx.sheet, t.max))}`;
+    return show(trackerMax(ctx.spec, ctx.character, ctx.sheet, t));
   },
   meter(ctx, listId) {
     const m = ctx.spec.lists[listId].meter;
