@@ -1,12 +1,262 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Character Dossier</title>
+<title>Character Sheet Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday hobby: a working tabletop sheet, tidy and quick to use at the table
+   IDEA a slicer's datapad readout of the printed sheet: stamped frames, pips, dice pools
+   PICTURE the characteristic dials plus wound/strain gauges, then the skill board with live dice pools
+   COLOUR sand ground, deep ink, Twi'lek teal lead, signal yellow for proficiency, green for ability
+   TYPE Chakra Petch display + Inter text
+   LAYOUT laptop: header strip, stat band, two skill columns, gear/talents below; phone: one column */
+:root{color-scheme:light dark;--bg:light-dark(#efe6d2,#16191b);--panel:light-dark(#fffaf0,#1f2427);--ink:light-dark(#1b1915,#ece6d8);--mute:light-dark(#6b6457,#9c978c);--line:light-dark(#d6c9ab,#353c40);--lead:light-dark(#0e6a80,#47b3cc);--lead2:light-dark(#d9eef2,#173740);--abl:#2f9a4c;--prf:#e9b81d;--red:light-dark(#b3321f,#e6765f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3vw,40px) max(4vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,.disp{font-family:"Chakra Petch",Inter,sans-serif;letter-spacing:-.01em}
+h1{font-size:clamp(34px,5vw,50px);line-height:1.05;margin:0}
+h2{font-size:20px;margin:0 0 10px}
+.top{background:var(--lead);color:#fff}
+.top .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 32px;align-items:end}
+.ids{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 24px;margin-top:14px;max-width:820px}
+@media(max-width:760px){.ids{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ids span{display:flex;flex-direction:column}
+.ids label{font-size:13px;opacity:.85;margin-bottom:2px}
+.ids input,.top h1 input{background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.35);color:#fff;font:inherit;padding:2px 0;width:9.5em}
+.top h1 input{font:inherit;width:100%;border:0}
+.ids input{font:600 21px "Chakra Petch",sans-serif;width:100%;padding:2px 0 4px}
+.xp{display:flex;gap:10px}
+.xp div{background:rgba(0,0,0,.18);border-radius:8px;padding:8px 14px;text-align:center}
+.xp input{width:4.2em;background:transparent;border:0;color:#fff;font:600 24px "Chakra Petch",sans-serif;text-align:center}
+.xp small{display:block;font-size:13px;opacity:.85}
+input,textarea,select{font:inherit;font-size:16px;color:var(--ink)}
+input:focus-visible,button:focus-visible,textarea:focus-visible{outline:2px solid var(--prf);outline-offset:2px}
+.stats{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.chars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.ch{text-align:center}
+.dial{width:100%;max-width:92px;aspect-ratio:1;margin:0 auto 6px;border-radius:50%;border:5px solid var(--lead);display:grid;place-items:center;background:var(--lead2)}
+.dial input{width:2ch;border:0;background:transparent;text-align:center;font:700 clamp(26px,4vw,38px) "Chakra Petch",sans-serif}
+.ch span{font-size:13px;color:var(--mute)}
+.gauges{display:grid;gap:12px}
+.g{display:grid;grid-template-columns:5.5em minmax(0,1fr) auto;gap:10px;align-items:center}
+.g b{font-family:"Chakra Petch",sans-serif;font-size:17px}
+.bar{height:26px;border-radius:6px;background:var(--lead2);display:flex;gap:2px;padding:3px;overflow:hidden}
+.bar i{flex:1;border-radius:2px;background:var(--line)}
+.bar i.on{background:var(--red)}
+.g .ctl{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.btn{min-width:44px;min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 18px Inter,sans-serif;cursor:pointer}
+.btn:hover{border-color:var(--lead)}
+.btn:active{transform:translateY(1px)}
+.g .n{font:600 18px "Chakra Petch",sans-serif;min-width:4.2em;text-align:center}
+.mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:4px}
+.mini div{border:1px solid var(--line);border-radius:8px;padding:6px;text-align:center}
+.mini input{width:3ch;border:0;background:transparent;text-align:center;font:700 24px "Chakra Petch",sans-serif}
+.mini small{display:block;font-size:13px;color:var(--mute)}
+.skills{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.sk{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;gap:4px 10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}
+.sk:last-child{border-bottom:0}
+.sk .nm{font-size:15px}
+.sk .nm em{font-style:normal;color:var(--mute);font-size:13px;margin-left:4px}
+.car{width:20px;height:20px;accent-color:var(--lead);margin:0}
+.pips{display:flex;gap:3px}
+.pips button{width:20px;height:24px;border:1px solid var(--lead);background:transparent;clip-path:polygon(0 0,70% 0,100% 50%,70% 100%,0 100%,30% 50%);cursor:pointer;padding:0}
+.pips button.on{background:var(--lead)}
+.pool{display:flex;gap:3px;min-width:5.6em;justify-content:flex-end}
+.d{width:16px;height:16px;transform:rotate(45deg) scale(.8);border-radius:2px}
+.d.a{background:var(--abl)}
+.d.p{background:var(--prf);transform:none;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border-radius:0}
+.grp{font:600 14px "Chakra Petch",sans-serif;color:var(--lead);margin:14px 0 2px}
+.grp:first-of-type{margin-top:0}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--mute);margin:0 0 14px;align-items:center}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.lower{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{font:600 13px Inter,sans-serif;color:var(--mute);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+td{padding:2px 4px;border-bottom:1px solid var(--line)}
+td input{width:100%;border:0;background:transparent;padding:6px 2px}
+td input.num{text-align:right;width:3.5em}
+.del{border:0;background:transparent;color:var(--mute);cursor:pointer;min-width:36px;min-height:36px;font-size:18px}
+.add{margin-top:8px;border:1px dashed var(--line);background:transparent;color:var(--lead);border-radius:8px;min-height:40px;padding:0 14px;cursor:pointer;font:600 14px Inter,sans-serif}
+textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:8px;background:transparent;padding:10px;resize:vertical}
+.ob{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center}
+.ob input{border:0;border-bottom:1px solid var(--line);background:transparent;padding:6px 0}
+.ob input.num{width:3.5em;text-align:right;font:600 18px "Chakra Petch",sans-serif}
+.note{font-size:13px;color:var(--mute);margin-top:6px}
+.flag{background:color-mix(in srgb,var(--prf) 30%,transparent);border-radius:4px;padding:0 4px}
+.bar2{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.bar2 .btn{font-size:14px;padding:0 14px}
+.tl{display:grid;gap:10px}
+.tc{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.th{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.tn{flex:1 1 12em;border:0;background:transparent;font:600 18px "Chakra Petch",sans-serif;padding:4px 0}
+.th label{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.th .num{width:2.6em;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:center;font-size:16px;padding:4px 0}
+.te{width:100%;min-height:2.8em;field-sizing:content;margin-top:6px;font-size:15px;line-height:1.45;resize:vertical}
+.wsk{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:2px}
+.wsk input{flex:1 1 10em;border:0;border-bottom:1px solid var(--line);background:transparent;padding:4px 0;font-size:15px}
+.wsk .note{margin:0}
+.wst{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.wst label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.wst input{border:0;background:transparent;font:600 22px "Chakra Petch",sans-serif;padding:2px 0;width:100%}
+.wsp{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--mute)}
+.wsp input{flex:1;border:0;border-bottom:1px solid var(--line);background:transparent;padding:4px 0;font-size:15px}
+.enc{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.encrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.encrow b{font-family:"Chakra Petch",sans-serif;font-size:17px}
+.encrow .n{font:600 20px "Chakra Petch",sans-serif;white-space:nowrap}
+.ebar{height:14px;border-radius:7px;background:var(--lead2);margin:6px 0 0;overflow:hidden}
+.ebar i{display:block;height:100%;background:var(--lead);border-radius:7px;transition:width .3s}
+.ebar i.over{background:var(--red)}
+.enc .warn{color:var(--red);font-weight:600}
+@media(max-width:900px){.stats,.skills,.lower{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.top .wrap{grid-template-columns:minmax(0,1fr)}.chars{grid-template-columns:repeat(3,minmax(0,1fr))}.g{grid-template-columns:4.6em minmax(0,1fr)}.g .ctl{grid-column:1/-1;justify-content:flex-end}table{font-size:14px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
-<h1>Character Dossier</h1>
-<p>A spec-driven character sheet engine for tabletop RPGs. Coming soon.</p>
+<header class="band top"><div class="wrap">
+  <div>
+    <h1><input id="f-name" aria-label="Character name"></h1>
+    <div class="ids">
+      <span><label for="f-species">Species</label><input id="f-species"></span>
+      <span><label for="f-career">Career</label><input id="f-career"></span>
+      <span><label for="f-spec">Specialization</label><input id="f-spec"></span>
+      <span><label for="f-player">Player</label><input id="f-player"></span>
+    </div>
+  </div>
+  <div class="xp">
+    <div><input id="f-xpt" inputmode="numeric" aria-label="Total XP"><small>Total XP</small></div>
+    <div><input id="f-xpa" inputmode="numeric" aria-label="Available XP"><small>Available XP</small></div>
+    <div><input id="f-cr" inputmode="numeric" aria-label="Credits"><small>Credits</small></div>
+  </div>
+</div></header>
+
+<main class="band"><div class="wrap">
+  <section class="stats">
+    <div class="panel"><h2>Characteristics</h2><div class="chars" id="chars"></div></div>
+    <div class="panel">
+      <h2>Condition</h2>
+      <div class="gauges" id="gauges"></div>
+      <div class="mini">
+        <div><input id="f-soak" inputmode="numeric" aria-label="Soak"><small>Soak</small></div>
+        <div><input id="f-dr" inputmode="numeric" aria-label="Ranged defense"><small>Def. ranged</small></div>
+        <div><input id="f-dm" inputmode="numeric" aria-label="Melee defense"><small>Def. melee</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:20px">
+    <div class="bar2"><h2>Skills</h2>
+      <div class="key"><span><input type="checkbox" class="car" checked disabled aria-hidden="true">career skill</span><span><i class="d a"></i>ability</span><span><i class="d p"></i>proficiency</span><span>Pool updates as you change ranks or characteristics</span></div>
+    </div>
+    <div class="skills"><div id="colA"></div><div id="colB"></div></div>
+  </section>
+
+  <section class="lower" style="margin-top:20px">
+    <div class="panel"><h2>Weapons</h2>
+      <div id="weapons" class="tl"></div>
+      <button class="add" data-add="weapons">Add weapon</button>
+    </div>
+    <div class="panel"><h2>Talents and abilities</h2>
+      <div id="talents" class="tl"></div>
+      <button class="add" data-add="talents">Add talent</button>
+    </div>
+    <div class="panel"><h2>Equipment</h2>
+      <div class="scroll"><table><thead><tr><th>Item</th><th>Enc.</th><th></th></tr></thead><tbody id="gear"></tbody></table></div>
+      <button class="add" data-add="gear">Add item</button>
+      <div class="enc" id="enc" aria-live="polite"></div>
+    </div>
+    <div class="panel"><h2>Obligations and motivations</h2>
+      <div class="ob" id="obs"></div>
+      <button class="add" data-add="obs">Add obligation</button>
+      <h2 style="margin-top:16px">Notes</h2>
+      <textarea id="f-notes" aria-label="Notes"></textarea>
+    </div>
+  </section>
+
+  <div class="bar2" style="margin-top:20px">
+    <p class="note" style="margin:0">Mockup with a made-up sample character. Edits are saved in this browser only.</p>
+    <span><button class="btn" id="copy">Copy as text</button> <button class="btn" id="reset">Reset</button></span>
+  </div>
+</div></main>
+
+<script>
+{
+const CH=["Brawn","Agility","Intellect","Cunning","Willpower","Presence"];
+const AB={Br:0,Ag:1,Int:2,Cun:3,Will:4,Pr:5};
+const SKILLS={General:[["Astrogation","Int"],["Athletics","Br"],["Charm","Pr"],["Coercion","Will"],["Computers","Int"],["Cool","Pr"],["Coordination","Ag"],["Deception","Cun"],["Discipline","Will"],["Leadership","Pr"],["Mechanics","Int"],["Medicine","Int"],["Negotiation","Pr"],["Perception","Cun"],["Piloting (Planetary)","Ag"],["Piloting (Space)","Ag"],["Resilience","Br"],["Skulduggery","Cun"],["Stealth","Ag"],["Streetwise","Cun"],["Survival","Cun"],["Vigilance","Will"]],Combat:[["Brawl","Br"],["Gunnery","Ag"],["Melee","Br"],["Ranged (Light)","Ag"],["Ranged (Heavy)","Ag"]],Knowledge:[["Core Worlds","Int"],["Education","Int"],["Lore","Int"],["Outer Rim","Int"],["Underworld","Int"],["Xenology","Int"]]};
+const SCAN={name:"Kessa Dorn",species:"Twi'lek",careerName:"Technician",spec:"Slicer",player:"Example",xpt:"120",xpa:"15",cr:"350",soak:"4",dr:"1",dm:"1",
+chars:[2,2,4,2,3,2],wt:12,wc:3,st:14,sc:2,
+ranks:{Computers:1,Astrogation:2,"Ranged (Heavy)":3,Mechanics:1},
+career:["Astrogation","Computers","Coordination","Discipline","Mechanics","Perception","Piloting (Planetary)","Stealth","Education","Outer Rim","Underworld"],
+weapons:[["Heavy Blaster Rifle","Ranged (Heavy)","10","Long","3","Auto-fire, Cumbersome 3"]],
+talents:[["Codebreaker","1","91","Remove a setback die per rank and lower difficulty by 1 when breaking codes or decrypting"]],
+gear:[["Padded Armor","0"],["Heavy Blaster Rifle","6"],["Tool Kit","2"]],
+obs:[["Obligation: Debt","10"],["Motivation","" ]],
+notes:""};
+const FLAG=[];
+let S;
+try{S=JSON.parse(localStorage.getItem("sample-sheet"))}catch(e){}
+if(!S)S=window.claude?.hot?.data?.name?window.claude.hot.data:structuredClone(SCAN);
+if(!Array.isArray(S.career))S.career=[...SCAN.career];
+if(!S.careerName)S.careerName="Technician";
+const save=()=>{try{localStorage.setItem("sample-sheet",JSON.stringify(S))}catch(e){}};
+window.claude?.hot?.snapshot?.(()=>S);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const FIELDS={name:"f-name",species:"f-species",careerName:"f-career",spec:"f-spec",player:"f-player",xpt:"f-xpt",xpa:"f-xpa",cr:"f-cr",soak:"f-soak",dr:"f-dr",dm:"f-dm",notes:"f-notes"};
+
+function pool(sk,ab){const c=S.chars[AB[ab]]||0,r=S.ranks[sk]||0,hi=Math.max(c,r),lo=Math.min(c,r);return '<i class="d p"></i>'.repeat(lo)+'<i class="d a"></i>'.repeat(hi-lo)}
+function skillRow([n,ab]){const r=S.ranks[n]||0,f=FLAG.includes(n)?' class="flag"':'';
+ return `<div class="sk"><input type="checkbox" class="car" data-car="${esc(n)}" ${S.career.includes(n)?"checked":""} aria-label="${esc(n)} is a career skill">
+ <span class="nm"><span${f}>${esc(n)}</span><em>${ab}</em></span>
+ <span class="pips">${[1,2,3,4,5].map(i=>`<button data-sk="${esc(n)}" data-r="${i}" class="${i<=r?"on":""}" aria-label="${esc(n)} rank ${i}"></button>`).join("")}</span>
+ <span class="pool" data-pool="${esc(n)}">${pool(n,ab)}</span></div>`}
+function renderSkills(){
+ $("colA").innerHTML='<div class="grp">General</div>'+SKILLS.General.map(skillRow).join("");
+ $("colB").innerHTML='<div class="grp">Combat</div>'+SKILLS.Combat.map(skillRow).join("")+'<div class="grp">Knowledge</div>'+SKILLS.Knowledge.map(skillRow).join("")}
+function renderChars(){$("chars").innerHTML=CH.map((c,i)=>`<div class="ch"><div class="dial"><input data-ch="${i}" value="${S.chars[i]}" inputmode="numeric" aria-label="${c}"></div><span>${c}</span></div>`).join("")}
+function renderGauges(){$("gauges").innerHTML=[["Wounds","w"],["Strain","s"]].map(([l,k])=>{const t=+S[k+"t"]||0,c=+S[k+"c"]||0;
+ return `<div class="g"><b>${l}</b><div class="bar" aria-hidden="true">${Array.from({length:Math.max(t,1)},(_,i)=>`<i class="${i<c?"on":""}"></i>`).join("")}</div>
+ <span class="ctl"><button class="btn" data-g="${k}" data-d="-1" aria-label="${l} down">−</button><span class="n">${c} / <input data-th="${k}" value="${t}" inputmode="numeric" aria-label="${l} threshold" style="width:2.2ch;border:0;background:transparent;font:inherit;color:inherit"></span><button class="btn" data-g="${k}" data-d="1" aria-label="${l} up">+</button></span></div>`}).join("")}
+const COLS={weapons:6,talents:4,gear:2};
+function renderTalents(){$("talents").innerHTML=S.talents.map((t,i)=>`<div class="tc"><div class="th"><input class="tn" data-t="talents" data-i="${i}" data-j="0" value="${esc(t[0])}" placeholder="Talent name" aria-label="Talent ${i+1} name"><label>Rank <input class="num" data-t="talents" data-i="${i}" data-j="1" value="${esc(t[1])}" inputmode="numeric"></label><label>Page <input class="num" data-t="talents" data-i="${i}" data-j="2" value="${esc(t[2])}" inputmode="numeric"></label><button class="del" data-del="talents" data-i="${i}" aria-label="Remove talent ${i+1}">×</button></div><textarea class="te" data-t="talents" data-i="${i}" data-j="3" rows="2" placeholder="Effect" aria-label="Talent ${i+1} effect">${esc(t[3])}</textarea></div>`).join("")}
+const norm=s=>String(s||"").toLowerCase().replace(/[^a-z]/g,"");
+function wpool(n){const s=Object.values(SKILLS).flat().find(x=>norm(x[0])===norm(n));return s?pool(s[0],s[1]):""}
+function updWpools(){document.querySelectorAll("[data-wpool]").forEach(p=>p.innerHTML=wpool(S.weapons[+p.dataset.wpool]?.[1]))}
+function renderWeapons(){$("weapons").innerHTML=S.weapons.map((w,i)=>{const f=(j,cls,lab,ex="")=>`<input${cls?` class="${cls}"`:""} data-t="weapons" data-i="${i}" data-j="${j}" value="${esc(w[j])}" aria-label="Weapon ${i+1} ${lab}" ${ex}>`;
+ return `<div class="tc"><div class="th">${f(0,"tn","name",'placeholder="Weapon"')}<button class="del" data-del="weapons" data-i="${i}" aria-label="Remove weapon ${i+1}">×</button></div><div class="wsk">${f(1,"","skill",'placeholder="Skill, e.g. Ranged (Heavy)"')}<span class="note">Roll</span><span class="pool" data-wpool="${i}">${wpool(w[1])}</span></div><div class="wst"><label>Damage${f(2,"","damage",'inputmode="numeric"')}</label><label>Crit${f(4,"","crit",'inputmode="numeric"')}</label><label>Range${f(3,"","range")}</label></div><div class="wsp">Special${f(5,"","special")}</div></div>`}).join("")}
+function renderTable(k){if(k==="talents")return renderTalents();if(k==="weapons")return renderWeapons();const w=COLS[k];$(k).innerHTML=S[k].map((row,i)=>`<tr>${Array.from({length:w},(_,j)=>`<td><input data-t="${k}" data-i="${i}" data-j="${j}" value="${esc(row[j])}" class="${(k=="gear"&&j==1)||(k=="talents"&&j>0&&j<3)||(k=="weapons"&&(j==2||j==4))?"num":""}" aria-label="${k} ${i+1} field ${j+1}"></td>`).join("")}<td><button class="del" data-del="${k}" data-i="${i}" aria-label="Remove row">×</button></td></tr>`).join("")}
+function renderObs(){$("obs").innerHTML=S.obs.map((o,i)=>`<input data-t="obs" data-i="${i}" data-j="0" value="${esc(o[0])}" aria-label="Obligation or motivation ${i+1}"><input class="num" data-t="obs" data-i="${i}" data-j="1" value="${esc(o[1])}" inputmode="numeric" aria-label="Magnitude ${i+1}">`).join("")}
+function renderEnc(){const tot=S.gear.reduce((a,g)=>a+(parseFloat(g[1])||0),0),th=5+(+S.chars[0]||0),over=tot-th;
+ $("enc").innerHTML=`<div class="encrow"><b>Encumbrance</b><span class="n">${tot} / ${th}</span></div><div class="ebar"><i class="${over>0?"over":""}" style="width:${Math.min(100,th?tot/th*100:100)}%"></i></div><p class="note">${over>0?`<span class="warn">Over by ${over}:</span> add ${over} setback ${over>1?"dice":"die"} to Agility and Brawn checks.`:`Threshold is 5 + Brawn. ${th-tot} to spare.`} Worn armor counts 3 less than its listed encumbrance.</p>`}
+function renderAll(){for(const[k,id]of Object.entries(FIELDS))$(id).value=S[k]??"";renderChars();renderGauges();renderSkills();["weapons","talents","gear"].forEach(renderTable);renderObs();renderEnc()}
+
+document.addEventListener("input",e=>{const t=e.target;
+ for(const[k,id]of Object.entries(FIELDS))if(t.id===id){S[k]=t.value;save();return}
+ if(t.dataset.ch){S.chars[+t.dataset.ch]=parseInt(t.value)||0;document.querySelectorAll("[data-pool]").forEach(p=>{const n=p.dataset.pool;const ab=Object.values(SKILLS).flat().find(s=>s[0]===n)[1];p.innerHTML=pool(n,ab)});renderEnc();updWpools();save()}
+ if(t.dataset.th){S[t.dataset.th+"t"]=parseInt(t.value)||0;save();const pos=t.selectionStart;renderGauges();const n=document.querySelector(`[data-th="${t.dataset.th}"]`);n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}
+ if(t.dataset.t){S[t.dataset.t][+t.dataset.i][+t.dataset.j]=t.value;save();if(t.dataset.t==="gear")renderEnc();if(t.dataset.t==="weapons")updWpools()}
+ if(t.dataset.car){const n=t.dataset.car;S.career=t.checked?[...S.career,n]:S.career.filter(x=>x!==n);save()}});
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.sk){const n=b.dataset.sk,r=+b.dataset.r;S.ranks[n]=(S.ranks[n]===r)?r-1:r;save();renderSkills();updWpools();document.querySelector(`[data-sk="${CSS.escape(n)}"][data-r="${r}"]`)?.focus()}
+ if(b.dataset.g){const k=b.dataset.g;S[k+"c"]=Math.max(0,(+S[k+"c"]||0)+ +b.dataset.d);save();renderGauges();document.querySelector(`[data-g="${k}"][data-d="${b.dataset.d}"]`).focus()}
+ if(b.dataset.add){const k=b.dataset.add;S[k].push(Array(COLS[k]||2).fill(""));save();k==="obs"?renderObs():renderTable(k);renderEnc()}
+ if(b.dataset.del){const k=b.dataset.del;S[k].splice(+b.dataset.i,1);save();renderTable(k);renderEnc()}
+ if(b.id==="reset"){if(b.dataset.armed){S=structuredClone(SCAN);save();renderAll();b.textContent="Reset";delete b.dataset.armed}else{b.dataset.armed=1;b.textContent="Click again to reset";setTimeout(()=>{b.textContent="Reset";delete b.dataset.armed},3000)}}
+ if(b.id==="copy"){const all=Object.values(SKILLS).flat().filter(([n])=>S.ranks[n]);
+  const txt=`${S.name} — ${S.species} ${S.careerName} (${S.spec}), player ${S.player}\n${CH.map((c,i)=>c+" "+S.chars[i]).join(", ")}\nSoak ${S.soak} | Wounds ${S.wc}/${S.wt} | Strain ${S.sc}/${S.st} | Defense ${S.dr}/${S.dm}\nXP ${S.xpa} available | Credits ${S.cr}\nSkills: ${all.map(([n])=>n+" "+S.ranks[n]).join(", ")}\nWeapons: ${S.weapons.map(w=>w.filter(Boolean).join(", ")).join("; ")}\nTalents: ${S.talents.map(t=>t[0]+(+t[1]>1?" x"+t[1]:"")).join(", ")}\nGear: ${S.gear.map(g=>g[0]).join(", ")}\n${S.obs.filter(o=>o[1]).map(o=>o[0]+" "+o[1]).join(", ")}`;
+  navigator.clipboard?.writeText(txt).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy as text",1500)}).catch(()=>{b.textContent="Copy blocked";setTimeout(()=>b.textContent="Copy as text",1500)})}});
+renderAll();
+}
+</script>
 </body>
 </html>

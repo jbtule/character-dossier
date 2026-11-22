@@ -12,7 +12,7 @@ Character files are user data, not part of the project. Keep your own in `local/
 | `systems/eote/system.json` | Edge of the Empire system spec (draft) |
 | `tests/fixtures/sample-character.json` | Made-up character used by tests |
 | `tools/check-formulas.mjs` | Evaluates the spec's Filtrex formulas against a character |
-| `site/` | Static site deployed to GitHub Pages (placeholder until the engine is built) |
+| `site/` | Static site deployed to GitHub Pages. For now, the hand-built mockup filled with the sample character |
 | `.github/workflows/` | Pages deploy, and zizmor security audit of the workflows |
 | `local/` | Gitignored. Your own characters and hand-built reference sheets |
 
