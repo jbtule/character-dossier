@@ -1,25 +1,34 @@
-# Character Sheet Engine — starter kit
+# Character Dossier
 
-A generic, spec-driven character sheet engine for tabletop RPGs. A **system spec** describes a game's rules. A **character file** holds one character's data. The **engine** reads both and renders an interactive sheet.
+A spec-driven character sheet engine for tabletop RPGs. A **system spec** describes a game's rules. A **character file** holds one character's data. The **engine** reads both and renders an interactive sheet.
 
-Character files are user data, not part of the project. Keep your own in `local/`, which is gitignored.
+**Live:** https://tools.tuley.name/character-dossier/ (pick a system, fill in a blank sheet; characters are saved in your browser and can be exported as JSON).
+
+Character files are user data, not part of the project. Keep your own in `local/`, which is gitignored, and load them with **Import**.
 
 ## What's here
 
 | Path | What it is |
 |---|---|
 | `docs/DESIGN.md` | Architecture, spec format, formula rules, widgets, milestones |
-| `systems/eote/system.json` | Edge of the Empire system spec (draft) |
-| `tests/fixtures/sample-character.json` | Made-up character used by tests |
-| `tools/check-formulas.mjs` | Evaluates the spec's Filtrex formulas against a character |
-| `site/` | Static site deployed to GitHub Pages. For now, the hand-built mockup filled with the sample character |
-| `.github/workflows/` | Pages deploy, and zizmor security audit of the workflows |
+| `systems/<id>/system.json` | System specs. Each one shows up in the system picker. Currently: Edge of the Empire |
+| `src/engine/` | Game-agnostic engine (formulas, derived values, dice pools). No DOM |
+| `src/` | Browser app: widgets, system picker, saving, import/export |
+| `tests/` | Engine tests; `tests/fixtures/sample-character.json` is a made-up character |
+| `tools/` | Build, dev server, formula checker, JSON formatter |
 | `local/` | Gitignored. Your own characters and hand-built reference sheets |
 
-## Check the formulas
+## Develop
 
 ```sh
-npm i filtrex@3
+npm ci
+npm test          # engine tests
+npm run dev       # build to dist/ and serve at http://localhost:8080/
+```
+
+Check a spec against a character from the command line:
+
+```sh
 node tools/check-formulas.mjs systems/eote/system.json tests/fixtures/sample-character.json
 ```
 
@@ -36,12 +45,15 @@ Expected for the sample character:
 | Astrogation | 2 proficiency, 2 ability |
 | Deception (untrained) | 0 proficiency, 2 ability |
 
+Specs are kept compact with `node tools/format-json.mjs systems/<id>/system.json`.
+
 ## CI
 
-- **Pages:** every push to `main` deploys `site/` to GitHub Pages.
+- **Pages:** every push to `main` runs the tests, builds, and deploys `dist/`. Assets go in a folder named after the commit SHA for cache busting; the footer badge shows the SHA and links here.
+- **Test:** pull requests run the tests and build.
 - **zizmor:** audits the workflows on every push and pull request; findings appear under Security → Code scanning. Run it locally with `zizmor --persona pedantic .github/`.
-- **Dependabot:** keeps the pinned action SHAs up to date weekly.
+- **Dependabot:** weekly updates for the pinned action SHAs and npm packages.
 
-## Kickoff prompt for Claude Code
+## Working on this with Claude Code
 
-> Read README.md and docs/DESIGN.md. Build milestone 1: a browser app that loads a system spec and a character file and renders an interactive sheet. Use `systems/eote/system.json` with my character in `local/`, and match the hand-built reference sheet in `local/` in look and behavior. Use Filtrex for all formulas as described in the design doc. Keep the engine free of Edge of the Empire–specific code: anything game-specific must come from the spec. Add tests using `tests/fixtures/sample-character.json` that check the derived values and dice pools listed in the README. The built app should be served from `site/` so the Pages workflow deploys it; keep actions pinned to commit SHAs and keep `zizmor --persona pedantic .github/` clean. Never commit anything from `local/`.
+Develop against your own character in `local/` (import it in the dev server), and compare against the hand-built reference sheet in `local/`. Keep the engine free of game-specific code: anything game-specific must come from the spec. Tests use `tests/fixtures/sample-character.json`. Keep actions pinned to commit SHAs and `zizmor --persona pedantic .github/` clean. Never commit anything from `local/`.

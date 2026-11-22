@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Character Dossier</title>
+<meta name="description" content="A spec-driven character sheet for tabletop RPGs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="%ASSETS%/styles.css">
+<script type="importmap">{ "imports": { "filtrex": "./%ASSETS%/vendor/filtrex.mjs" } }</script>
+<script type="module" src="%ASSETS%/app.js"></script>
+</head>
+<body>
+<nav class="appbar" aria-label="Characters"><div class="wrap">
+  <span class="brand">Character Dossier</span>
+  <label class="sr" for="characters">Character</label>
+  <select id="characters"></select>
+  <button class="btn" id="new">New</button>
+  <button class="btn" id="import">Import</button>
+  <button class="btn" id="export">Export</button>
+  <button class="btn" id="delete">Delete</button>
+  <input type="file" id="file" accept="application/json,.json" hidden>
+</div></nav>
+
+<header class="band top"><div class="wrap" id="header"></div></header>
+
+<main class="band"><div class="wrap">
+  <p id="message" class="error" role="status"></p>
+  <div class="grid" id="body"></div>
+  <footer>
+    <p class="note">Characters are saved in this browser only. Use Export to keep a copy.</p>
+    <a class="badge" href="%REPO_URL%" title="Built from commit %SHA%"><span>character-dossier</span><span>%SHORT_SHA%</span></a>
+  </footer>
+</div></main>
+
+<dialog id="picker" aria-labelledby="picker-title">
+  <h2 id="picker-title">New character</h2>
+  <p class="note">Choose a game system. You'll get a blank sheet to fill in.</p>
+  <div class="systems" id="systems"></div>
+  <div class="dlg-actions"><button class="btn" id="picker-cancel">Cancel</button></div>
+</dialog>
+</body>
+</html>
