@@ -1,0 +1,8 @@
+# Personal characters and reference sheets (local only)
+local/
+
+# Node
+node_modules/
+
+# macOS
+.DS_Store

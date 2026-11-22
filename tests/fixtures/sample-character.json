@@ -1,0 +1,45 @@
+{
+  "system": "eote",
+  "name": "Kessa Dorn",
+  "player": "Example",
+  "species": "twilek",
+  "career": "technician",
+  "specialization": "slicer",
+
+  "xpTotal": 120,
+  "xpAvailable": 15,
+  "credits": 350,
+
+  "characteristics": { "brawn": 2, "agility": 2, "intellect": 4, "cunning": 2, "willpower": 3, "presence": 2 },
+
+  "skills": {
+    "computers": 1,
+    "astrogation": 2,
+    "rangedHeavy": 3,
+    "mechanics": 1
+  },
+
+  "trackers": { "wounds": 3, "strain": 2 },
+  "defenseRanged": 1,
+  "defenseMelee": 1,
+
+  "lists": {
+    "weapons": [
+      { "name": "Heavy Blaster Rifle", "skill": "rangedHeavy", "damage": 10, "crit": 3, "range": "Long", "special": "Auto-fire, Cumbersome 3" }
+    ],
+    "talents": [
+      { "name": "Codebreaker", "rank": 1, "page": 91, "effect": "Remove a setback die per rank and lower difficulty by 1 when breaking codes or decrypting communications." }
+    ],
+    "gear": [
+      { "name": "Padded Armor", "enc": 2, "soak": 2, "worn": true },
+      { "name": "Heavy Blaster Rifle", "enc": 6 },
+      { "name": "Tool Kit", "enc": 2 }
+    ],
+    "obligations": [
+      { "type": "Debt", "magnitude": 10, "notes": "Owes a docking crew for repairs." }
+    ]
+  },
+
+  "motivation": "",
+  "notes": "Made-up character used as the test fixture. Over encumbrance on purpose."
+}

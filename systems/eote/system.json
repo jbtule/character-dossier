@@ -1,0 +1,179 @@
+{
+  "id": "eote",
+  "name": "Star Wars: Edge of the Empire",
+  "specVersion": 1,
+
+  "dice": {
+    "ability":     { "label": "Ability",     "shape": "diamond", "color": "#2f9a4c" },
+    "proficiency": { "label": "Proficiency", "shape": "hexagon", "color": "#e9b81d" },
+    "boost":       { "label": "Boost",       "shape": "square",  "color": "#7fc4e8" },
+    "setback":     { "label": "Setback",     "shape": "square",  "color": "#222222" }
+  },
+
+  "characteristics": [
+    { "id": "brawn",     "label": "Brawn",     "abbr": "Br" },
+    { "id": "agility",   "label": "Agility",   "abbr": "Ag" },
+    { "id": "intellect", "label": "Intellect", "abbr": "Int" },
+    { "id": "cunning",   "label": "Cunning",   "abbr": "Cun" },
+    { "id": "willpower", "label": "Willpower", "abbr": "Will" },
+    { "id": "presence",  "label": "Presence",  "abbr": "Pr" }
+  ],
+
+  "skillGroups": ["General", "Combat", "Knowledge"],
+  "skillMaxRank": 5,
+  "skills": [
+    { "id": "astrogation",       "label": "Astrogation",          "characteristic": "intellect", "group": "General" },
+    { "id": "athletics",         "label": "Athletics",            "characteristic": "brawn",     "group": "General" },
+    { "id": "charm",             "label": "Charm",                "characteristic": "presence",  "group": "General" },
+    { "id": "coercion",          "label": "Coercion",             "characteristic": "willpower", "group": "General" },
+    { "id": "computers",         "label": "Computers",            "characteristic": "intellect", "group": "General" },
+    { "id": "cool",              "label": "Cool",                 "characteristic": "presence",  "group": "General" },
+    { "id": "coordination",      "label": "Coordination",         "characteristic": "agility",   "group": "General" },
+    { "id": "deception",         "label": "Deception",            "characteristic": "cunning",   "group": "General" },
+    { "id": "discipline",        "label": "Discipline",           "characteristic": "willpower", "group": "General" },
+    { "id": "leadership",        "label": "Leadership",           "characteristic": "presence",  "group": "General" },
+    { "id": "mechanics",         "label": "Mechanics",            "characteristic": "intellect", "group": "General" },
+    { "id": "medicine",          "label": "Medicine",             "characteristic": "intellect", "group": "General" },
+    { "id": "negotiation",       "label": "Negotiation",          "characteristic": "presence",  "group": "General" },
+    { "id": "perception",        "label": "Perception",           "characteristic": "cunning",   "group": "General" },
+    { "id": "pilotingPlanetary", "label": "Piloting (Planetary)", "characteristic": "agility",   "group": "General" },
+    { "id": "pilotingSpace",     "label": "Piloting (Space)",     "characteristic": "agility",   "group": "General" },
+    { "id": "resilience",        "label": "Resilience",           "characteristic": "brawn",     "group": "General" },
+    { "id": "skulduggery",       "label": "Skulduggery",          "characteristic": "cunning",   "group": "General" },
+    { "id": "stealth",           "label": "Stealth",              "characteristic": "agility",   "group": "General" },
+    { "id": "streetwise",        "label": "Streetwise",           "characteristic": "cunning",   "group": "General" },
+    { "id": "survival",          "label": "Survival",             "characteristic": "cunning",   "group": "General" },
+    { "id": "vigilance",         "label": "Vigilance",            "characteristic": "willpower", "group": "General" },
+    { "id": "brawl",             "label": "Brawl",                "characteristic": "brawn",     "group": "Combat" },
+    { "id": "gunnery",           "label": "Gunnery",              "characteristic": "agility",   "group": "Combat" },
+    { "id": "melee",             "label": "Melee",                "characteristic": "brawn",     "group": "Combat" },
+    { "id": "rangedLight",       "label": "Ranged (Light)",       "characteristic": "agility",   "group": "Combat" },
+    { "id": "rangedHeavy",       "label": "Ranged (Heavy)",       "characteristic": "agility",   "group": "Combat" },
+    { "id": "coreWorlds",        "label": "Core Worlds",          "characteristic": "intellect", "group": "Knowledge" },
+    { "id": "education",         "label": "Education",            "characteristic": "intellect", "group": "Knowledge" },
+    { "id": "lore",              "label": "Lore",                 "characteristic": "intellect", "group": "Knowledge" },
+    { "id": "outerRim",          "label": "Outer Rim",            "characteristic": "intellect", "group": "Knowledge" },
+    { "id": "underworld",        "label": "Underworld",           "characteristic": "intellect", "group": "Knowledge" },
+    { "id": "xenology",          "label": "Xenology",             "characteristic": "intellect", "group": "Knowledge" }
+  ],
+
+  "_comment_skillRoll": "Evaluated per skill with context { characteristic, rank }. Each key is a die id from 'dice' and the result is how many of that die to show.",
+  "skillRoll": {
+    "proficiency": "min(characteristic, rank)",
+    "ability": "max(characteristic, rank) - min(characteristic, rank)"
+  },
+
+  "species": {
+    "twilek": {
+      "label": "Twi'lek",
+      "characteristics": { "brawn": 1, "agility": 2, "intellect": 2, "cunning": 2, "willpower": 2, "presence": 3 },
+      "woundBase": 10,
+      "strainBase": 11,
+      "startingXp": 100,
+      "abilities": [
+        { "name": "Bonus skill", "effect": "Begins with one rank in Charm or Deception (max rank 2 at creation)." },
+        { "name": "Desert Dwellers", "page": 52, "effect": "Remove a setback die imposed by arid or hot environmental conditions." }
+      ]
+    }
+  },
+
+  "careers": {
+    "technician": {
+      "label": "Technician",
+      "freeRanks": 4,
+      "skills": ["astrogation", "computers", "coordination", "discipline", "outerRim", "mechanics", "perception", "pilotingPlanetary"],
+      "specializations": {
+        "slicer": {
+          "label": "Slicer",
+          "freeRanks": 2,
+          "skills": ["computers", "education", "underworld", "stealth"]
+        }
+      }
+    }
+  },
+
+  "_comment_derived": "Filtrex expressions. Context: every characteristic id, every derived id already computed, 'species' (with dot access enabled), and the extra function sumOf(listId, fieldOrItemFormula).",
+  "derived": {
+    "woundThreshold":       { "label": "Wound threshold",       "formula": "species.woundBase + brawn" },
+    "strainThreshold":      { "label": "Strain threshold",      "formula": "species.strainBase + willpower" },
+    "soak":                 { "label": "Soak",                  "formula": "brawn + sumOf(\"gear\", \"wornSoak\")" },
+    "encumbrance":          { "label": "Encumbrance",           "formula": "sumOf(\"gear\", \"effectiveEnc\")" },
+    "encumbranceThreshold": { "label": "Encumbrance threshold", "formula": "5 + brawn" },
+    "encumbranceOver":      { "label": "Over by",               "formula": "max(0, encumbrance - encumbranceThreshold)" }
+  },
+
+  "trackers": [
+    { "id": "wounds", "label": "Wounds", "max": "woundThreshold" },
+    { "id": "strain", "label": "Strain", "max": "strainThreshold" }
+  ],
+
+  "lists": {
+    "weapons": {
+      "label": "Weapons",
+      "display": "cards",
+      "fields": [
+        { "id": "name",    "label": "Weapon",  "type": "text",   "role": "title" },
+        { "id": "skill",   "label": "Skill",   "type": "skillRef", "showRoll": true },
+        { "id": "damage",  "label": "Damage",  "type": "number", "role": "stat" },
+        { "id": "crit",    "label": "Crit",    "type": "number", "role": "stat" },
+        { "id": "range",   "label": "Range",   "type": "text",   "role": "stat", "options": ["Engaged", "Short", "Medium", "Long", "Extreme"] },
+        { "id": "special", "label": "Special", "type": "text" }
+      ]
+    },
+    "talents": {
+      "label": "Talents and abilities",
+      "display": "cards",
+      "fields": [
+        { "id": "name",   "label": "Talent", "type": "text",   "role": "title" },
+        { "id": "rank",   "label": "Rank",   "type": "number", "role": "badge" },
+        { "id": "page",   "label": "Page",   "type": "number", "role": "badge" },
+        { "id": "effect", "label": "Effect", "type": "longtext" }
+      ]
+    },
+    "gear": {
+      "label": "Equipment",
+      "display": "table",
+      "fields": [
+        { "id": "name", "label": "Item",  "type": "text" },
+        { "id": "enc",  "label": "Enc.",  "type": "number" },
+        { "id": "soak", "label": "Soak",  "type": "number", "optional": true },
+        { "id": "worn", "label": "Worn",  "type": "bool",   "optional": true }
+      ],
+      "_comment_itemFormulas": "Evaluated per item with the item's fields as context. Referenced by sumOf().",
+      "itemFormulas": {
+        "effectiveEnc": "if worn then max(0, enc - 3) else enc",
+        "wornSoak": "if worn then soak else 0"
+      },
+      "meter": { "label": "Encumbrance", "value": "encumbrance", "max": "encumbranceThreshold",
+                 "overNote": "Add {encumbranceOver} setback to Agility and Brawn checks." }
+    },
+    "obligations": {
+      "label": "Obligations",
+      "display": "table",
+      "fields": [
+        { "id": "type",      "label": "Type",      "type": "text" },
+        { "id": "magnitude", "label": "Magnitude", "type": "number" },
+        { "id": "notes",     "label": "Story",     "type": "longtext", "optional": true }
+      ]
+    }
+  },
+
+  "_comment_xpCosts": "Not used by the first version. Kept here so an XP ledger can be added later.",
+  "xpCosts": {
+    "characteristic": "10 * newValue",
+    "skill": "5 * newRank + (if isCareer then 0 else 5)",
+    "talent": "5 * tier"
+  },
+
+  "layout": [
+    { "type": "header",          "fields": ["name", "species", "career", "specialization", "player"], "badges": ["xpTotal", "xpAvailable", "credits"] },
+    { "type": "characteristics", "display": "dials" },
+    { "type": "trackers",        "extra": ["soak", "defenseRanged", "defenseMelee"] },
+    { "type": "skills",          "columns": [["General"], ["Combat", "Knowledge"]] },
+    { "type": "list", "list": "weapons" },
+    { "type": "list", "list": "talents" },
+    { "type": "list", "list": "gear" },
+    { "type": "list", "list": "obligations" },
+    { "type": "notes" }
+  ]
+}
