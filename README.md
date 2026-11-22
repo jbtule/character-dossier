@@ -12,6 +12,8 @@ Character files are user data, not part of the project. Keep your own in `local/
 | `systems/eote/system.json` | Edge of the Empire system spec (draft) |
 | `tests/fixtures/sample-character.json` | Made-up character used by tests |
 | `tools/check-formulas.mjs` | Evaluates the spec's Filtrex formulas against a character |
+| `site/` | Static site deployed to GitHub Pages (placeholder until the engine is built) |
+| `.github/workflows/` | Pages deploy, and zizmor security audit of the workflows |
 | `local/` | Gitignored. Your own characters and hand-built reference sheets |
 
 ## Check the formulas
@@ -34,6 +36,12 @@ Expected for the sample character:
 | Astrogation | 2 proficiency, 2 ability |
 | Deception (untrained) | 0 proficiency, 2 ability |
 
+## CI
+
+- **Pages:** every push to `main` deploys `site/` to GitHub Pages.
+- **zizmor:** audits the workflows on every push and pull request; findings appear under Security → Code scanning. Run it locally with `zizmor --persona pedantic .github/`.
+- **Dependabot:** keeps the pinned action SHAs up to date weekly.
+
 ## Kickoff prompt for Claude Code
 
-> Read README.md and docs/DESIGN.md. Build milestone 1: a browser app that loads a system spec and a character file and renders an interactive sheet. Use `systems/eote/system.json` with my character in `local/`, and match the hand-built reference sheet in `local/` in look and behavior. Use Filtrex for all formulas as described in the design doc. Keep the engine free of Edge of the Empire–specific code: anything game-specific must come from the spec. Add tests using `tests/fixtures/sample-character.json` that check the derived values and dice pools listed in the README. Never commit anything from `local/`.
+> Read README.md and docs/DESIGN.md. Build milestone 1: a browser app that loads a system spec and a character file and renders an interactive sheet. Use `systems/eote/system.json` with my character in `local/`, and match the hand-built reference sheet in `local/` in look and behavior. Use Filtrex for all formulas as described in the design doc. Keep the engine free of Edge of the Empire–specific code: anything game-specific must come from the spec. Add tests using `tests/fixtures/sample-character.json` that check the derived values and dice pools listed in the README. The built app should be served from `site/` so the Pages workflow deploys it; keep actions pinned to commit SHAs and keep `zizmor --persona pedantic .github/` clean. Never commit anything from `local/`.
