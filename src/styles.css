@@ -18,10 +18,10 @@ input::placeholder,textarea::placeholder{color:var(--mute);opacity:.8}
 .brand{font:700 17px "Chakra Petch",sans-serif;margin-right:auto;letter-spacing:.02em}
 .appbar select{background:#2a2f33;color:#ece6d8;border:1px solid #3b4247;border-radius:8px;min-height:40px;padding:0 10px;max-width:22em}
 .appbar .btn{background:#2a2f33;color:#ece6d8;border-color:#3b4247;font-size:14px;min-height:40px;padding:0 12px}
-.appbar select{flex:1 1 10em}
-.tools{display:flex}
+.tools{display:flex;min-width:0}
+.tools select{flex:1 1 10em;min-width:0;border-radius:8px 0 0 8px}
+.tools select:focus-visible{position:relative;z-index:1}
 .tools .btn.icon{display:grid;place-items:center;min-width:44px;min-height:40px;padding:0;border-radius:0;margin-left:-1px}
-.tools .btn.icon:first-child{border-radius:8px 0 0 8px;margin-left:0}
 .tools .btn.icon:last-child{border-radius:0 8px 8px 0}
 .tools .btn.icon:hover,.tools .btn.icon:focus-visible{position:relative;z-index:1}
 .tools .btn.icon:disabled{opacity:.4;cursor:default;border-color:#3b4247}
@@ -170,5 +170,5 @@ footer .disclaimer{flex-basis:100%;font-size:12px}
 .error{color:var(--red);font-size:14px}
 
 @media(max-width:900px){.grid,.skills{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:600px){.brand{flex-basis:100%}.appbar select{min-width:0;max-width:none}.stats{gap:6px}.stats label{padding:6px 8px}.th .tn{flex:1 1 calc(100% - 50px);order:0}.th .del{order:1}.th label{order:2}.th label:first-of-type{margin-left:0}.top .wrap{grid-template-columns:minmax(0,1fr)}.xp>div{flex:1 1 0;padding:8px 6px}.xp input,.xp output{width:100%}.sk{grid-template-columns:22px minmax(0,1fr) auto}.sk .nm{grid-column:2/-1}.sk .pips{grid-column:2}.sk .pool{grid-column:3}.chars{grid-template-columns:repeat(3,minmax(0,1fr))}.g{grid-template-columns:4.6em minmax(0,1fr)}.g .ctl{grid-column:1/-1;justify-content:flex-end}table{font-size:14px}}
+@media(max-width:600px){.brand{flex-basis:100%}.tools{flex:1 1 100%}.tools select{max-width:none}.stats{gap:6px}.stats label{padding:6px 8px}.th .tn{flex:1 1 calc(100% - 50px);order:0}.th .del{order:1}.th label{order:2}.th label:first-of-type{margin-left:0}.top .wrap{grid-template-columns:minmax(0,1fr)}.xp>div{flex:1 1 0;padding:8px 6px}.xp input,.xp output{width:100%}.sk{grid-template-columns:22px minmax(0,1fr) auto}.sk .nm{grid-column:2/-1}.sk .pips{grid-column:2}.sk .pool{grid-column:3}.chars{grid-template-columns:repeat(3,minmax(0,1fr))}.g{grid-template-columns:4.6em minmax(0,1fr)}.g .ctl{grid-column:1/-1;justify-content:flex-end}table{font-size:14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
