@@ -23,12 +23,29 @@ async function loadSpec(id) {
   return (state.specs[id] = await res.json());
 }
 
+// Per-character highlight color. Derives the two accent tokens from one hex so it stays
+// readable in light and dark mode; unset or invalid falls back to the stylesheet defaults.
+const HEX = /^#[0-9a-f]{6}$/i;
+const DEFAULT_COLOR = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "#47b3cc" : "#0e6a80");
+function applyColor() {
+  const c = state.ctx?.character.color;
+  const root = document.documentElement.style;
+  if (c && HEX.test(c)) {
+    root.setProperty("--lead", `light-dark(color-mix(in oklab, ${c} 85%, black), color-mix(in oklab, ${c} 75%, white))`);
+    root.setProperty("--lead2", `light-dark(color-mix(in oklab, ${c} 18%, white), color-mix(in oklab, ${c} 30%, #16191b))`);
+  } else {
+    root.removeProperty("--lead");
+    root.removeProperty("--lead2");
+  }
+}
+
 const systemName = (id) => state.systems.find((s) => s.id === id)?.name ?? id;
 
 // ---------- rendering ----------
 
 function render() {
   renderToolbar();
+  applyColor();
   const header = $("#header");
   const body = $("#body");
   const disclaimer = $("#disclaimer");
@@ -56,6 +73,9 @@ function renderToolbar() {
   sel.disabled = !all.length;
   $("#export").disabled = !state.ctx;
   $("#delete").disabled = !state.ctx;
+  const c = state.ctx?.character.color;
+  $("#color").disabled = !state.ctx;
+  $("#color").value = c && HEX.test(c) ? c : DEFAULT_COLOR();
 }
 
 const FOCUS_KEYS = ["field", "char", "rank", "r", "career", "tracker", "d", "list", "i", "f", "add", "del"];
@@ -201,6 +221,12 @@ function wire() {
   $("#characters").addEventListener("change", (e) => openCharacter(e.target.value));
   $("#new").addEventListener("click", () => showPicker({ cancellable: true }));
   $("#export").addEventListener("click", exportCharacter);
+  $("#color").addEventListener("input", (e) => {
+    if (!state.ctx) return;
+    state.ctx.character.color = e.target.value;
+    applyColor();
+    save();
+  });
   $("#import").addEventListener("click", () => $("#file").click());
   $("#file").addEventListener("change", (e) => { const f = e.target.files[0]; if (f) importFile(f); e.target.value = ""; });
   $("#delete").addEventListener("click", async () => {

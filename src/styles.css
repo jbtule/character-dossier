@@ -25,6 +25,11 @@ input::placeholder,textarea::placeholder{color:var(--mute);opacity:.8}
 .tools .btn.icon:last-child{border-radius:0 8px 8px 0}
 .tools .btn.icon:hover,.tools .btn.icon:focus-visible{position:relative;z-index:1}
 .tools .btn.icon:disabled{opacity:.4;cursor:default;border-color:#3b4247}
+.swatch{position:relative;cursor:pointer}
+.swatch i{position:absolute;left:10px;right:10px;bottom:5px;height:3px;border-radius:2px;background:var(--lead)}
+.swatch input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.swatch:has(input:disabled){opacity:.4;cursor:default}
+.swatch:has(input:focus-visible){outline:2px solid var(--lead);outline-offset:2px;z-index:1}
 .tools .btn.danger:not(:disabled):hover{color:#e6765f;border-color:#e6765f}
 .btn.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 

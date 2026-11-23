@@ -30,6 +30,8 @@ The spec doesn't carry catalogs of species, careers, talents or gear: the player
 
 A new character is blank: every field empty, characteristics unset, no ranks, no career skills, empty lists.
 
+A character can also carry an optional `color` (`"#rrggbb"`), set from the palette button in the toolbar. It is an engine-level field, not part of any spec: the app derives the sheet's highlight tokens (`--lead`, `--lead2`) from it, adjusted for light and dark mode. Missing or invalid values fall back to the default teal.
+
 ## Formulas: Filtrex 3
 
 All game logic in a spec is written as [Filtrex](https://github.com/m93a/filtrex) expressions. Filtrex is safe: a spec can't run arbitrary code, so specs can be shared.
