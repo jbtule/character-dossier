@@ -17,10 +17,12 @@
   <span class="brand">Character Dossier</span>
   <label class="sr" for="characters">Character</label>
   <select id="characters"></select>
-  <button class="btn" id="new">New</button>
-  <button class="btn" id="import">Import</button>
-  <button class="btn" id="export">Export</button>
-  <button class="btn" id="delete">Delete</button>
+  <div class="tools" role="group" aria-label="Character actions">
+    <button class="btn icon" id="new" aria-label="New character" title="New character"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="btn icon" id="import" aria-label="Import character" title="Import character (JSON)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 17v3h16v-3"/></svg></button>
+    <button class="btn icon" id="export" aria-label="Export character" title="Export character (JSON)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 17v3h16v-3"/></svg></button>
+    <button class="btn icon danger" id="delete" aria-label="Delete character" title="Delete character"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button>
+  </div>
   <input type="file" id="file" accept="application/json,.json" hidden>
 </div></nav>
 

@@ -18,6 +18,15 @@ input::placeholder,textarea::placeholder{color:var(--mute);opacity:.8}
 .brand{font:700 17px "Chakra Petch",sans-serif;margin-right:auto;letter-spacing:.02em}
 .appbar select{background:#2a2f33;color:#ece6d8;border:1px solid #3b4247;border-radius:8px;min-height:40px;padding:0 10px;max-width:22em}
 .appbar .btn{background:#2a2f33;color:#ece6d8;border-color:#3b4247;font-size:14px;min-height:40px;padding:0 12px}
+.appbar select{flex:1 1 10em}
+.tools{display:flex}
+.tools .btn.icon{display:grid;place-items:center;min-width:44px;min-height:40px;padding:0;border-radius:0;margin-left:-1px}
+.tools .btn.icon:first-child{border-radius:8px 0 0 8px;margin-left:0}
+.tools .btn.icon:last-child{border-radius:0 8px 8px 0}
+.tools .btn.icon:hover,.tools .btn.icon:focus-visible{position:relative;z-index:1}
+.tools .btn.icon:disabled{opacity:.4;cursor:default;border-color:#3b4247}
+.tools .btn.danger:not(:disabled):hover{color:#e6765f;border-color:#e6765f}
+.btn.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* Header */
 .top{background:var(--lead);color:#fff}
