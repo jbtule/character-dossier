@@ -4,7 +4,7 @@
   "specVersion": 1,
   "_comment_disclaimer": "Optional. Plain text shown in the system picker and the sheet footer: trademark and affiliation notice for this game.",
   "disclaimer": "Unofficial fan tool. Not affiliated with or endorsed by Lucasfilm, Disney, Fantasy Flight Games or Edge Studio. Star Wars and Edge of the Empire are trademarks of their respective owners.",
-  "_comment_fields": "Top-level character fields: text | number | longtext. Number fields are available in formulas by id (unset = 0). 'private': true marks a field to blur in table view (the eye button); it also works on list fields or a whole list.",
+  "_comment_fields": "Top-level character fields: text | number | longtext. Number fields are available in formulas by id (unset = 0). 'private': true gives a field its own eye button that blurs it; on a list field or a whole list, the list gets one eye.",
   "fields": {
     "name": {"label": "Name", "type": "text"},
     "species": {"label": "Species", "type": "text"},

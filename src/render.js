@@ -34,20 +34,39 @@ export function refreshOutputs(ctx, root) {
   if (p) p.outerHTML = html || '<div data-problems hidden></div>';
 }
 
-function panel(sec, inner, title) {
+function panel(sec, inner, title, tools = "") {
   const span = sec.span ?? (sec.type === "skills" || sec.type === "header" ? "full" : "half");
-  return `<section class="panel span-${esc(span)}">${title ? `<h2>${esc(title)}</h2>` : ""}${inner}</section>`;
+  return `<section class="panel span-${esc(span)}">${title ? `<h2>${esc(title)}${tools}</h2>` : ""}${inner}</section>`;
 }
 
 // ---------- field inputs ----------
 
-// Private fields are blurred and made inert while the sheet is in table view (ctx.hidePrivate).
-const privacy = (ctx, isPrivate) => (isPrivate ? { "data-private": true, inert: !!ctx.hidePrivate } : {});
+// ---------- privacy ----------
+// Private fields and lists get an eye button; while it's pressed their inputs are blurred and
+// inert. ctx.hidden is a Set of keys: "f:<fieldId>" for a field, "l:<listId>" for a list.
+
+const fieldKey = (id) => `f:${id}`;
+const listKey = (id) => `l:${id}`;
+const privacy = (ctx, key) => (key ? { "data-private": true, inert: !!ctx.hidden?.has(key) } : {});
+const listIsPrivate = (def) => !!(def.private || def.fields?.some((f) => f.private));
+
+const EYE_OPEN = '<svg class="open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_SHUT = '<svg class="shut" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+function eye(ctx, key, name) {
+  const hidden = !!ctx.hidden?.has(key);
+  return `<button class="eye" ${attrs({ "data-eye": key, "aria-pressed": String(hidden), "aria-label": `Hide ${name}`, title: hidden ? `Show ${name}` : `Hide ${name}` })}>${EYE_OPEN}${EYE_SHUT}</button>`;
+}
+
+/** A field's label, with an eye button when the field is private. */
+function fieldLabel(ctx, id) {
+  const l = `<label for="f-${esc(id)}">${esc(label(ctx, id))}</label>`;
+  return ctx.spec.fields?.[id]?.private ? `<div class="lbl">${l}${eye(ctx, fieldKey(id), label(ctx, id))}</div>` : l;
+}
 
 function fieldInput(ctx, fieldId, extra = {}) {
   const f = ctx.spec.fields?.[fieldId] ?? { type: "text", label: fieldId };
   const v = ctx.character[fieldId];
-  extra = { ...extra, ...privacy(ctx, f.private) };
+  extra = { ...extra, ...privacy(ctx, f.private && fieldKey(fieldId)) };
   if (f.type === "longtext") return `<textarea ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, ...extra })}>${esc(v)}</textarea>`;
   return `<input ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, value: f.type === "number" ? numStr(v) : (v ?? ""), inputmode: f.type === "number" ? "numeric" : null, ...extra })}>`;
 }
@@ -78,7 +97,7 @@ const WIDGETS = {
   header(ctx, sec) {
     const [nameId, ...rest] = sec.fields ?? [];
     const name = nameId ? `<h1>${fieldInput(ctx, nameId, { placeholder: label(ctx, nameId), "aria-label": label(ctx, nameId), autocomplete: "off" })}</h1>` : "";
-    const ids = rest.map((id) => `<span><label for="f-${esc(id)}">${esc(label(ctx, id))}</label>${fieldInput(ctx, id)}</span>`).join("");
+    const ids = rest.map((id) => `<span>${fieldLabel(ctx, id)}${fieldInput(ctx, id)}</span>`).join("");
     const badges = (sec.badges ?? []).map((id) => statBox(ctx, id)).join("");
     return `<div>${name}<div class="ids">${ids}</div></div><div class="xp">${badges}</div>`;
   },
@@ -122,19 +141,21 @@ const WIDGETS = {
     const body = def.display === "cards" ? cards(ctx, sec.list, def, items) : table(ctx, sec.list, def, items);
     const singular = def.itemLabel ?? def.fields?.find((f) => f.role === "title")?.label ?? def.fields?.[0]?.label ?? "item";
     const meter = def.meter ? `<div class="meter" data-out="meter:${esc(sec.list)}" aria-live="polite">${OUTPUTS.meter(ctx, sec.list)}</div>` : "";
-    return panel(sec, `${body}<button class="add" data-add="${esc(sec.list)}">Add ${esc(singular.toLowerCase())}</button>${meter}`, sec.label ?? def.label);
+    const title = sec.label ?? def.label;
+    const tools = listIsPrivate(def) ? eye(ctx, listKey(sec.list), title) : "";
+    return panel(sec, `${body}<button class="add" data-add="${esc(sec.list)}">Add ${esc(singular.toLowerCase())}</button>${meter}`, title, tools);
   },
 
   notes(ctx, sec) {
     const ids = sec.fields ?? ["notes"];
-    const inner = `<div class="notes">${ids.map((id) => `<div><label for="f-${esc(id)}">${esc(label(ctx, id))}</label>${fieldInput(ctx, id, { class: "big" })}</div>`).join("")}</div>`;
+    const inner = `<div class="notes">${ids.map((id) => `<div>${fieldLabel(ctx, id)}${fieldInput(ctx, id, { class: "big" })}</div>`).join("")}</div>`;
     return panel(sec, inner);
   },
 };
 
 function itemInput(ctx, listId, i, f, item, extra = {}) {
   const v = item[f.id];
-  const base = { "data-list": listId, "data-i": i, "data-f": f.id, "aria-label": `${f.label} ${i + 1}`, ...extra, ...privacy(ctx, f.private || ctx.spec.lists[listId].private) };
+  const base = { "data-list": listId, "data-i": i, "data-f": f.id, "aria-label": `${f.label} ${i + 1}`, ...extra, ...privacy(ctx, (f.private || ctx.spec.lists[listId].private) && listKey(listId)) };
   if (f.type === "bool") return `<input type="checkbox" ${attrs({ ...base, checked: !!v })}>`;
   if (f.type === "longtext") return `<textarea class="te" ${attrs({ ...base, placeholder: f.label })}>${esc(v)}</textarea>`;
   if (f.type === "skillRef") {
