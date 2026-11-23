@@ -41,9 +41,13 @@ function panel(sec, inner, title) {
 
 // ---------- field inputs ----------
 
+// Private fields are blurred and made inert while the sheet is in table view (ctx.hidePrivate).
+const privacy = (ctx, isPrivate) => (isPrivate ? { "data-private": true, inert: !!ctx.hidePrivate } : {});
+
 function fieldInput(ctx, fieldId, extra = {}) {
   const f = ctx.spec.fields?.[fieldId] ?? { type: "text", label: fieldId };
   const v = ctx.character[fieldId];
+  extra = { ...extra, ...privacy(ctx, f.private) };
   if (f.type === "longtext") return `<textarea ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, ...extra })}>${esc(v)}</textarea>`;
   return `<input ${attrs({ "data-field": fieldId, id: `f-${fieldId}`, value: f.type === "number" ? numStr(v) : (v ?? ""), inputmode: f.type === "number" ? "numeric" : null, ...extra })}>`;
 }
@@ -130,7 +134,7 @@ const WIDGETS = {
 
 function itemInput(ctx, listId, i, f, item, extra = {}) {
   const v = item[f.id];
-  const base = { "data-list": listId, "data-i": i, "data-f": f.id, "aria-label": `${f.label} ${i + 1}`, ...extra };
+  const base = { "data-list": listId, "data-i": i, "data-f": f.id, "aria-label": `${f.label} ${i + 1}`, ...extra, ...privacy(ctx, f.private || ctx.spec.lists[listId].private) };
   if (f.type === "bool") return `<input type="checkbox" ${attrs({ ...base, checked: !!v })}>`;
   if (f.type === "longtext") return `<textarea class="te" ${attrs({ ...base, placeholder: f.label })}>${esc(v)}</textarea>`;
   if (f.type === "skillRef") {

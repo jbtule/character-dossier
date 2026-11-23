@@ -30,6 +30,10 @@ input::placeholder,textarea::placeholder{color:var(--mute);opacity:.8}
 .swatch input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
 .swatch:has(input:disabled){opacity:.4;cursor:default}
 .swatch:has(input:focus-visible){outline:2px solid var(--lead);outline-offset:2px;z-index:1}
+.tools .btn[aria-pressed=true]{background:var(--lead-fill);color:var(--on-lead)}
+#privacy .shut,#privacy[aria-pressed=true] .open{display:none}
+#privacy[aria-pressed=true] .shut{display:block}
+[data-private][inert]{filter:blur(6px);user-select:none;opacity:.8}
 .tools .btn.danger:not(:disabled):hover{color:#e6765f;border-color:#e6765f}
 .btn.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
@@ -175,5 +179,5 @@ footer .disclaimer{flex-basis:100%;font-size:12px}
 .error{color:var(--red);font-size:14px}
 
 @media(max-width:900px){.grid,.skills{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:600px){.brand{flex-basis:100%}.tools{flex:1 1 100%}.tools select{max-width:none}.stats{gap:6px}.stats label{padding:6px 8px}.th .tn{flex:1 1 calc(100% - 50px);order:0}.th .del{order:1}.th label{order:2}.th label:first-of-type{margin-left:0}.top .wrap{grid-template-columns:minmax(0,1fr)}.xp>div{flex:1 1 0;padding:8px 6px}.xp input,.xp output{width:100%}.sk{grid-template-columns:22px minmax(0,1fr) auto}.sk .nm{grid-column:2/-1}.sk .pips{grid-column:2}.sk .pool{grid-column:3}.chars{grid-template-columns:repeat(3,minmax(0,1fr))}.g{grid-template-columns:4.6em minmax(0,1fr)}.g .ctl{grid-column:1/-1;justify-content:flex-end}table{font-size:14px}}
+@media(max-width:600px){.tools .btn.icon{min-width:40px}.brand{flex-basis:100%}.tools{flex:1 1 100%}.tools select{max-width:none}.stats{gap:6px}.stats label{padding:6px 8px}.th .tn{flex:1 1 calc(100% - 50px);order:0}.th .del{order:1}.th label{order:2}.th label:first-of-type{margin-left:0}.top .wrap{grid-template-columns:minmax(0,1fr)}.xp>div{flex:1 1 0;padding:8px 6px}.xp input,.xp output{width:100%}.sk{grid-template-columns:22px minmax(0,1fr) auto}.sk .nm{grid-column:2/-1}.sk .pips{grid-column:2}.sk .pool{grid-column:3}.chars{grid-template-columns:repeat(3,minmax(0,1fr))}.g{grid-template-columns:4.6em minmax(0,1fr)}.g .ctl{grid-column:1/-1;justify-content:flex-end}table{font-size:14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}

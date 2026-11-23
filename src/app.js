@@ -7,7 +7,7 @@ import { highlightTokens, isHex } from "./color.js";
 const $ = (s) => document.querySelector(s);
 const asset = (p) => new URL(p, import.meta.url);
 
-const state = { systems: [], specs: {}, ctx: null, currentId: null };
+const state = { systems: [], specs: {}, ctx: null, currentId: null, hidePrivate: !!store.getPref("hidePrivate") };
 
 async function loadSystems() {
   const res = await fetch(asset("systems/index.json"));
@@ -39,6 +39,10 @@ function applyColor() {
   }
 }
 
+const hasPrivate = (spec) =>
+  Object.values(spec.fields ?? {}).some((f) => f.private) ||
+  Object.values(spec.lists ?? {}).some((l) => l.private || l.fields?.some((f) => f.private));
+
 const systemName = (id) => state.systems.find((s) => s.id === id)?.name ?? id;
 
 // ---------- rendering ----------
@@ -57,6 +61,7 @@ function render() {
     return;
   }
   const focus = rememberFocus();
+  state.ctx.hidePrivate = state.hidePrivate;
   const { header: h, body: b } = renderSheet(state.ctx);
   header.innerHTML = h;
   body.innerHTML = b;
@@ -73,6 +78,9 @@ function renderToolbar() {
   sel.disabled = !all.length;
   $("#export").disabled = !state.ctx;
   $("#delete").disabled = !state.ctx;
+  const priv = $("#privacy");
+  priv.disabled = !state.ctx || !hasPrivate(state.ctx.spec);
+  priv.setAttribute("aria-pressed", String(state.hidePrivate && !priv.disabled));
   const c = state.ctx?.character.color;
   $("#color").disabled = !state.ctx;
   $("#color").value = isHex(c) ? c : DEFAULT_COLOR();
@@ -221,6 +229,11 @@ function wire() {
   $("#characters").addEventListener("change", (e) => openCharacter(e.target.value));
   $("#new").addEventListener("click", () => showPicker({ cancellable: true }));
   $("#export").addEventListener("click", exportCharacter);
+  $("#privacy").addEventListener("click", () => {
+    state.hidePrivate = !state.hidePrivate;
+    store.setPref("hidePrivate", state.hidePrivate);
+    render();
+  });
   $("#color").addEventListener("input", (e) => {
     if (!state.ctx) return;
     state.ctx.character.color = e.target.value;

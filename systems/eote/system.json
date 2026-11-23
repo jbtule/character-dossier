@@ -4,7 +4,7 @@
   "specVersion": 1,
   "_comment_disclaimer": "Optional. Plain text shown in the system picker and the sheet footer: trademark and affiliation notice for this game.",
   "disclaimer": "Unofficial fan tool. Not affiliated with or endorsed by Lucasfilm, Disney, Fantasy Flight Games or Edge Studio. Star Wars and Edge of the Empire are trademarks of their respective owners.",
-  "_comment_fields": "Top-level character fields: text | number | longtext. Number fields are available in formulas by id (unset = 0).",
+  "_comment_fields": "Top-level character fields: text | number | longtext. Number fields are available in formulas by id (unset = 0). 'private': true marks a field to blur in table view (the eye button); it also works on list fields or a whole list.",
   "fields": {
     "name": {"label": "Name", "type": "text"},
     "species": {"label": "Species", "type": "text"},
@@ -18,8 +18,8 @@
     "strainThreshold": {"label": "Strain threshold", "type": "number"},
     "defenseRanged": {"label": "Def. ranged", "type": "number"},
     "defenseMelee": {"label": "Def. melee", "type": "number"},
-    "motivation": {"label": "Motivation", "type": "longtext"},
-    "notes": {"label": "Notes", "type": "longtext"}
+    "motivation": {"label": "Motivation", "type": "longtext", "private": true},
+    "notes": {"label": "Notes", "type": "longtext", "private": true}
   },
   "dice": {
     "ability": {"label": "Ability", "shape": "diamond", "color": "#2f9a4c"},
@@ -142,9 +142,9 @@
       "itemLabel": "Obligation",
       "display": "table",
       "fields": [
-        {"id": "type", "label": "Type", "type": "text"},
+        {"id": "type", "label": "Type", "type": "text", "private": true},
         {"id": "magnitude", "label": "Magnitude", "type": "number"},
-        {"id": "notes", "label": "Story", "type": "longtext", "optional": true}
+        {"id": "notes", "label": "Story", "type": "longtext", "optional": true, "private": true}
       ]
     }
   },

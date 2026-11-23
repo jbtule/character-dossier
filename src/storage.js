@@ -54,6 +54,13 @@ export function remove(id) {
   write();
 }
 
+/** Small per-browser UI preferences (not part of any character). */
+export const getPref = (key) => memory.prefs?.[key];
+export function setPref(key, value) {
+  memory.prefs = { ...memory.prefs, [key]: value };
+  write();
+}
+
 export const getCurrent = () => memory.current;
 export function setCurrent(id) {
   memory.current = id;
