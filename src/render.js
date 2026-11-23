@@ -162,7 +162,7 @@ function cards(ctx, listId, def, items) {
     // Keep the skill/roll row right under the title, like the reference sheet.
     const firstRef = rest.findIndex((f) => f.type === "skillRef");
     const before = firstRef >= 0 ? restHtml.splice(firstRef, 1) : [];
-    const statsHtml = stats.length ? `<div class="stats">${stats.map((f) => `<label>${esc(f.label)}${itemInput(ctx, listId, i, f, item)}</label>`).join("")}</div>` : "";
+    const statsHtml = stats.length ? `<div class="stats">${stats.map((f) => `<label${f.type === "number" ? "" : ' class="wide"'}>${esc(f.label)}${itemInput(ctx, listId, i, f, item)}</label>`).join("")}</div>` : "";
     return `<div class="tc">${head}${before.join("")}${statsHtml}${restHtml.join("")}</div>`;
   }).join("")}</div>${datalists(listId, def)}`;
 }
