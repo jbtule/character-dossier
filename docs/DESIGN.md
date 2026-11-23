@@ -26,7 +26,7 @@ Adding a game: add `systems/<id>/system.json` (its `id` must match the folder). 
 
 `fields` declares the character's top-level fields: `text`, `number` or `longtext`. Number fields are available in formulas by id (unset = 0).
 
-Any field, list field or whole list can be marked `"private": true` for things other players shouldn't read over your shoulder (EotE: Motivation, Notes, Obligation type and story). Each private field gets an eye button beside its label, and a list with private parts gets one in its heading. Pressing it blurs those inputs and makes them `inert` (no focus, no editing, hidden from screen readers) until pressed again, so you can hide just the parts you care about. Which sections are hidden is remembered per browser. It guards against glances only; the data is still in the browser and in exports.
+Any field, list field or whole list can be marked `"private": true` for things other players shouldn't read over your shoulder (EotE: Motivation, Notes, Obligation type and story). Each private field gets an eye button beside its label, and a list with private parts gets one in its heading. Private sections start hidden: blurred and `inert` (no focus, no editing, hidden from screen readers). The eye reveals one section at a time, and pressing it again hides it. Which sections are revealed is remembered per browser. It guards against glances only; the data is still in the browser and in exports.
 
 The spec doesn't carry catalogs of species, careers, talents or gear: the player types them in, as on a printed sheet. Values that a catalog would have supplied (like a species' wound base) are entered directly, e.g. the wound and strain thresholds are number fields.
 

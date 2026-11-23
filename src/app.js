@@ -7,7 +7,7 @@ import { highlightTokens, isHex } from "./color.js";
 const $ = (s) => document.querySelector(s);
 const asset = (p) => new URL(p, import.meta.url);
 
-const state = { systems: [], specs: {}, ctx: null, currentId: null, hidden: new Set(store.getPref("hidden") ?? []) };
+const state = { systems: [], specs: {}, ctx: null, currentId: null, shown: new Set(store.getPref("shown") ?? []) };
 
 async function loadSystems() {
   const res = await fetch(asset("systems/index.json"));
@@ -57,7 +57,7 @@ function render() {
     return;
   }
   const focus = rememberFocus();
-  state.ctx.hidden = state.hidden;
+  state.ctx.shown = state.shown;
   const { header: h, body: b } = renderSheet(state.ctx);
   header.innerHTML = h;
   body.innerHTML = b;
@@ -156,8 +156,8 @@ function onClick(e) {
   const ch = state.ctx.character;
   const d = b.dataset;
   if ("eye" in d) {
-    if (!state.hidden.delete(d.eye)) state.hidden.add(d.eye);
-    store.setPref("hidden", [...state.hidden]);
+    if (!state.shown.delete(d.eye)) state.shown.add(d.eye);
+    store.setPref("shown", [...state.shown]);
     render();
     return;
   }

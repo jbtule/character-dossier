@@ -42,18 +42,19 @@ function panel(sec, inner, title, tools = "") {
 // ---------- field inputs ----------
 
 // ---------- privacy ----------
-// Private fields and lists get an eye button; while it's pressed their inputs are blurred and
-// inert. ctx.hidden is a Set of keys: "f:<fieldId>" for a field, "l:<listId>" for a list.
+// Private fields and lists get an eye button. They start hidden (blurred and inert); the eye
+// reveals them. ctx.shown is a Set of revealed keys: "f:<fieldId>" for a field, "l:<listId>" for a list.
 
 const fieldKey = (id) => `f:${id}`;
 const listKey = (id) => `l:${id}`;
-const privacy = (ctx, key) => (key ? { "data-private": true, inert: !!ctx.hidden?.has(key) } : {});
+const isHidden = (ctx, key) => !ctx.shown?.has(key);
+const privacy = (ctx, key) => (key ? { "data-private": true, inert: isHidden(ctx, key) } : {});
 const listIsPrivate = (def) => !!(def.private || def.fields?.some((f) => f.private));
 
 const EYE_OPEN = '<svg class="open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_SHUT = '<svg class="shut" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
 function eye(ctx, key, name) {
-  const hidden = !!ctx.hidden?.has(key);
+  const hidden = isHidden(ctx, key);
   return `<button class="eye" ${attrs({ "data-eye": key, "aria-pressed": String(hidden), "aria-label": `Hide ${name}`, title: hidden ? `Show ${name}` : `Hide ${name}` })}>${EYE_OPEN}${EYE_SHUT}</button>`;
 }
 
