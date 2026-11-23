@@ -6,7 +6,7 @@ One engine, many games. Adding a new game should mean writing a new `system.json
 
 ## Three layers
 
-1. **System spec** (`systems/<id>/system.json`): the rules. Character fields, characteristics, skills and which characteristic each uses, derived values as formulas, the dice-pool rule, trackers, list definitions (weapons, talents, gear…), and the sheet layout.
+1. **System spec** (`systems/<id>/system.json`): the rules. Character fields, characteristics, skills and which characteristic each uses, derived values as formulas, the dice-pool rule, trackers, list definitions (weapons, talents, gear…), and the sheet layout. A spec can also carry a `disclaimer`: plain text with the game's trademark and affiliation notice, shown in the system picker and the sheet footer. Each game's owners differ, so the notice belongs to the spec, not the engine.
 2. **Character file** (any path, e.g. `local/<name>.json`): one character's data. Character files are user data and aren't stored in the repo, except the test fixture in `tests/fixtures/`. Refers to spec entries by id where the spec defines them (`"skill": "rangedHeavy"`); things the spec doesn't catalog (species, career) are plain text.
 3. **Engine**: loads both, evaluates formulas, renders widgets, handles edits and saving.
 

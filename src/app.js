@@ -31,6 +31,9 @@ function render() {
   renderToolbar();
   const header = $("#header");
   const body = $("#body");
+  const disclaimer = $("#disclaimer");
+  disclaimer.textContent = state.ctx?.spec.disclaimer ?? "";
+  disclaimer.hidden = !disclaimer.textContent;
   if (!state.ctx) {
     header.innerHTML = '<div><h1>Character Dossier</h1><p>Pick a game system to start a blank character sheet.</p></div>';
     body.innerHTML = "";
@@ -154,7 +157,7 @@ function onClick(e) {
 
 function showPicker({ cancellable }) {
   const dlg = $("#picker");
-  $("#systems").innerHTML = state.systems.map((s) => `<button class="sys" data-system="${esc(s.id)}"><b>${esc(s.name)}</b><small>Start a blank character sheet</small></button>`).join("");
+  $("#systems").innerHTML = state.systems.map((s) => `<button class="sys" data-system="${esc(s.id)}"><b>${esc(s.name)}</b><small>Start a blank character sheet</small>${s.disclaimer ? `<small class="disclaimer">${esc(s.disclaimer)}</small>` : ""}</button>`).join("");
   $("#picker-cancel").hidden = !cancellable;
   dlg.dataset.cancellable = cancellable ? "1" : "";
   dlg.showModal();

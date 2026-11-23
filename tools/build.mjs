@@ -42,7 +42,7 @@ for (const id of fs.readdirSync(path.join(root, "systems")).sort()) {
   if (spec.id !== id) throw new Error(`systems/${id}/system.json has id "${spec.id}"; it must match the folder name`);
   fs.mkdirSync(path.join(assetDir, "systems", id), { recursive: true });
   fs.copyFileSync(file, path.join(assetDir, "systems", id, "system.json"));
-  systems.push({ id, name: spec.name, path: `${id}/system.json` });
+  systems.push({ id, name: spec.name, ...(spec.disclaimer && { disclaimer: spec.disclaimer }), path: `${id}/system.json` });
 }
 fs.writeFileSync(path.join(assetDir, "systems", "index.json"), JSON.stringify(systems, null, 2) + "\n");
 
