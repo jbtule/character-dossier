@@ -169,6 +169,10 @@ function onClick(e) {
     ch.trackers[d.tracker] = Math.max(0, (+ch.trackers[d.tracker] || 0) + +d.d);
   } else if ("add" in d) {
     ch.lists[d.add].push(blankItem(state.ctx.spec, d.add));
+    if (d.reveal && !state.shown.has(d.reveal)) {
+      state.shown.add(d.reveal);
+      store.setPref("shown", [...state.shown]);
+    }
   } else if ("del" in d) {
     ch.lists[d.del].splice(+d.i, 1);
   } else return;

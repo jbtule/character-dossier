@@ -15,6 +15,8 @@ test("private fields start hidden, and each eye reveals only its own section", (
   assert.match(shown, /data-eye="f:motivation"/);
   assert.match(shown, /data-eye="l:obligations"/);
   assert.doesNotMatch(shown, /data-eye="l:weapons"/);
+  assert.match(tag(hidden, /<button[^>]*data-add="obligations"[^>]*>/), /data-reveal="l:obligations"/);
+  assert.doesNotMatch(tag(hidden, /<button[^>]*data-add="weapons"[^>]*>/), /data-reveal/);
   const onlyNotes = html(["f:notes"]);
   assert.doesNotMatch(tag(onlyNotes, /<textarea[^>]*data-field="notes"[^>]*>/), /\binert\b/);
   assert.match(tag(onlyNotes, /<textarea[^>]*data-field="motivation"[^>]*>/), /\binert\b/);

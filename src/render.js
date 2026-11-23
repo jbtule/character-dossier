@@ -143,8 +143,10 @@ const WIDGETS = {
     const singular = def.itemLabel ?? def.fields?.find((f) => f.role === "title")?.label ?? def.fields?.[0]?.label ?? "item";
     const meter = def.meter ? `<div class="meter" data-out="meter:${esc(sec.list)}" aria-live="polite">${OUTPUTS.meter(ctx, sec.list)}</div>` : "";
     const title = sec.label ?? def.label;
-    const tools = listIsPrivate(def) ? eye(ctx, listKey(sec.list), title) : "";
-    return panel(sec, `${body}<button class="add" data-add="${esc(sec.list)}">Add ${esc(singular.toLowerCase())}</button>${meter}`, title, tools);
+    const priv = listIsPrivate(def);
+    const tools = priv ? eye(ctx, listKey(sec.list), title) : "";
+    // Adding to a hidden private list reveals it, so the new item can be filled in.
+    return panel(sec, `${body}<button ${attrs({ class: "add", "data-add": sec.list, "data-reveal": priv ? listKey(sec.list) : null })}>Add ${esc(singular.toLowerCase())}</button>${meter}`, title, tools);
   },
 
   notes(ctx, sec) {
