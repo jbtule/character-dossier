@@ -30,7 +30,7 @@ The spec doesn't carry catalogs of species, careers, talents or gear: the player
 
 A new character is blank: every field empty, characteristics unset, no ranks, no career skills, empty lists.
 
-A character can also carry an optional `color` (`"#rrggbb"`), set from the palette button in the toolbar. It is an engine-level field, not part of any spec: the app derives the sheet's highlight tokens (`--lead`, `--lead2`) from it, adjusted for light and dark mode. Missing or invalid values fall back to the default teal.
+A character can also carry an optional `color` (`"#rrggbb"`), set from the palette button in the toolbar. It is an engine-level field, not part of any spec: `src/color.js` turns it into the highlight tokens using WCAG contrast. The header band (`--lead-fill`) is the picked color exactly, and its text (`--on-lead`) is white or ink, whichever contrasts more. Accent text (`--lead`) is darkened (light mode) or lightened (dark mode) only as far as needed to reach 4.5:1 against the page and panel backgrounds; `--lead2` is a tint of it. Missing or invalid values fall back to the default teal, and a test checks that the stylesheet's default `--on-lead` follows the same rule.
 
 ## Formulas: Filtrex 3
 

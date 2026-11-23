@@ -2,6 +2,7 @@
 import { blankCharacter, blankItem, normalizeCharacter } from "./engine/sheet.js";
 import { renderSheet, refreshOutputs, esc } from "./render.js";
 import * as store from "./storage.js";
+import { highlightTokens, isHex } from "./color.js";
 
 const $ = (s) => document.querySelector(s);
 const asset = (p) => new URL(p, import.meta.url);
@@ -23,19 +24,18 @@ async function loadSpec(id) {
   return (state.specs[id] = await res.json());
 }
 
-// Per-character highlight color. Derives the two accent tokens from one hex so it stays
-// readable in light and dark mode; unset or invalid falls back to the stylesheet defaults.
-const HEX = /^#[0-9a-f]{6}$/i;
+// Per-character highlight color. color.js turns one hex into contrast-checked accent tokens
+// for light and dark mode; unset or invalid falls back to the stylesheet defaults.
+const TOKENS = { lead: "--lead", lead2: "--lead2", fill: "--lead-fill", onLead: "--on-lead" };
 const DEFAULT_COLOR = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "#47b3cc" : "#0e6a80");
 function applyColor() {
   const c = state.ctx?.character.color;
   const root = document.documentElement.style;
-  if (c && HEX.test(c)) {
-    root.setProperty("--lead", `light-dark(color-mix(in oklab, ${c} 85%, black), color-mix(in oklab, ${c} 75%, white))`);
-    root.setProperty("--lead2", `light-dark(color-mix(in oklab, ${c} 18%, white), color-mix(in oklab, ${c} 30%, #16191b))`);
+  if (isHex(c)) {
+    const t = highlightTokens(c);
+    for (const [k, prop] of Object.entries(TOKENS)) root.setProperty(prop, `light-dark(${t[k].light},${t[k].dark})`);
   } else {
-    root.removeProperty("--lead");
-    root.removeProperty("--lead2");
+    for (const prop of Object.values(TOKENS)) root.removeProperty(prop);
   }
 }
 
@@ -75,7 +75,7 @@ function renderToolbar() {
   $("#delete").disabled = !state.ctx;
   const c = state.ctx?.character.color;
   $("#color").disabled = !state.ctx;
-  $("#color").value = c && HEX.test(c) ? c : DEFAULT_COLOR();
+  $("#color").value = isHex(c) ? c : DEFAULT_COLOR();
 }
 
 const FOCUS_KEYS = ["field", "char", "rank", "r", "career", "tracker", "d", "list", "i", "f", "add", "del"];
