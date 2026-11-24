@@ -54,7 +54,10 @@ Specs are kept compact with `node tools/format-json.mjs systems/<id>/system.json
 
 ## License
 
-[PolyForm Noncommercial License 1.0.0](LICENSE.md). Free to use, change and share for any noncommercial purpose; commercial use needs separate permission. Game systems described by the specs in `systems/` belong to their owners; each spec carries its own trademark disclaimer.
+- **Software** (engine, app, tools, tests): © 2026 James Tuley, under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). Free to use, change and share for any noncommercial purpose; commercial use needs separate permission.
+- **System specs** (`systems/`): dedicated to the public domain under [CC0 1.0](systems/LICENSE.md). Write and share specs freely.
+- **The games themselves**: rules, names and trademarks belong to their owners. Each spec carries its own disclaimer, shown in the app.
+- **Your characters**: belong to you. Nothing here claims them.
 
 ## Working on this with Claude Code
 

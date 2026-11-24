@@ -1,5 +1,13 @@
 Required Notice: Copyright 2026 James Tuley (https://github.com/jbtule/character-dossier)
 
+Scope: this license covers the Character Dossier software (the engine, app, tools and tests). It does not cover:
+
+- the game system specs in `systems/`, which are dedicated to the public domain under CC0 1.0 (see `systems/LICENSE.md`);
+- the games those specs describe, whose rules, names and trademarks belong to their respective owners;
+- character files and other data that users create with the software, which belong to the people who make them.
+
+---
+
 # PolyForm Noncommercial License 1.0.0
 
 <https://polyformproject.org/licenses/noncommercial/1.0.0>
