@@ -52,6 +52,10 @@ Specs are kept compact with `node tools/format-json.mjs systems/<id>/system.json
 - **zizmor:** audits the workflows on every push and pull request; findings appear under Security → Code scanning. Run it locally with `zizmor --persona pedantic .github/`.
 - **Dependabot:** weekly updates for the pinned action SHAs and npm packages.
 
+## License
+
+[PolyForm Noncommercial License 1.0.0](LICENSE.md). Free to use, change and share for any noncommercial purpose; commercial use needs separate permission. Game systems described by the specs in `systems/` belong to their owners; each spec carries its own trademark disclaimer.
+
 ## Working on this with Claude Code
 
 Develop against your own character in `local/` (import it in the dev server), and compare against the hand-built reference sheet in `local/`. Keep the engine free of game-specific code: anything game-specific must come from the spec. Tests use `tests/fixtures/sample-character.json`. Keep actions pinned to commit SHAs and `zizmor --persona pedantic .github/` clean. Never commit anything from `local/`.

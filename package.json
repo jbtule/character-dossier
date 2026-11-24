@@ -9,7 +9,7 @@
     "build": "node tools/build.mjs",
     "dev": "node tools/build.mjs && node tools/serve.mjs dist"
   },
-  "license": "UNLICENSED",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "dependencies": {
     "filtrex": "^3.1.0"
   }
