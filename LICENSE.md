@@ -1,4 +1,4 @@
-Required Notice: Copyright 2026 Jay Tuley (https://github.com/jbtule/character-dossier)
+Required Notice: Copyright 2026 James Tuley (https://github.com/jbtule/character-dossier)
 
 # PolyForm Noncommercial License 1.0.0
 
