@@ -11,7 +11,7 @@ Character files are user data, not part of the project. Keep your own in `local/
 | Path | What it is |
 |---|---|
 | `docs/DESIGN.md` | Architecture, spec format, formula rules, widgets, milestones |
-| `systems/<id>/system.json` | System specs. Each one shows up in the system picker. Currently: Edge of the Empire |
+| `systems/<id>/system.toml` | System specs, written in TOML. Each one shows up in the system picker. Currently: Edge of the Empire |
 | `src/engine/` | Game-agnostic engine (formulas, derived values, dice pools). No DOM |
 | `src/` | Browser app: widgets, system picker, saving, import/export |
 | `tests/` | Engine tests; `tests/fixtures/sample-character.json` is a made-up character |
@@ -29,7 +29,7 @@ npm run dev       # build to dist/ and serve at http://localhost:8080/
 Check a spec against a character from the command line:
 
 ```sh
-node tools/check-formulas.mjs systems/eote/system.json tests/fixtures/sample-character.json
+node tools/check-formulas.mjs systems/eote/system.toml tests/fixtures/sample-character.json
 ```
 
 Expected for the sample character:
@@ -43,7 +43,7 @@ Expected for the sample character:
 | Astrogation | 2 proficiency, 2 ability |
 | Deception (untrained) | 0 proficiency, 2 ability |
 
-Specs are kept compact with `node tools/format-json.mjs systems/<id>/system.json`.
+Specs are TOML so they can carry comments and be edited by hand. The build converts each one to the JSON the app loads; a plain `system.json` is still accepted.
 
 ## CI
 

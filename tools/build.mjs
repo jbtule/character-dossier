@@ -4,6 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { findSpecFile, loadSpecFile } from "./spec-file.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const out = path.join(root, "dist");
@@ -33,15 +34,17 @@ for (const entry of fs.readdirSync(path.join(root, "src"))) {
 fs.mkdirSync(path.join(assetDir, "vendor"));
 fs.copyFileSync(path.join(root, "node_modules/filtrex/dist/esm/filtrex.mjs"), path.join(assetDir, "vendor/filtrex.mjs"));
 
-// Systems: copy each spec and write an index for the system picker
+// Systems: convert each spec (TOML or JSON) to JSON and write an index for the system picker
 const systems = [];
 for (const id of fs.readdirSync(path.join(root, "systems")).sort()) {
-  const file = path.join(root, "systems", id, "system.json");
-  if (!fs.existsSync(file)) continue;
-  const spec = JSON.parse(fs.readFileSync(file, "utf8"));
-  if (spec.id !== id) throw new Error(`systems/${id}/system.json has id "${spec.id}"; it must match the folder name`);
+  const dir = path.join(root, "systems", id);
+  if (!fs.statSync(dir).isDirectory()) continue;
+  const file = findSpecFile(dir);
+  if (!file) continue;
+  const spec = loadSpecFile(file);
+  if (spec.id !== id) throw new Error(`${path.relative(root, file)} has id "${spec.id}"; it must match the folder name`);
   fs.mkdirSync(path.join(assetDir, "systems", id), { recursive: true });
-  fs.copyFileSync(file, path.join(assetDir, "systems", id, "system.json"));
+  fs.writeFileSync(path.join(assetDir, "systems", id, "system.json"), JSON.stringify(spec) + "\n");
   systems.push({ id, name: spec.name, ...(spec.disclaimer && { disclaimer: spec.disclaimer }), path: `${id}/system.json` });
 }
 fs.writeFileSync(path.join(assetDir, "systems", "index.json"), JSON.stringify(systems, null, 2) + "\n");

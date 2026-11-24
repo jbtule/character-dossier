@@ -3,8 +3,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { renderSheet } from "../src/render.js";
 import { normalizeCharacter } from "../src/engine/sheet.js";
+import { fileURLToPath } from "node:url";
+import { loadSpecFile } from "../tools/spec-file.mjs";
 
-const spec = JSON.parse(fs.readFileSync(new URL("../systems/eote/system.json", import.meta.url), "utf8"));
+const spec = loadSpecFile(fileURLToPath(new URL("../systems/eote/system.toml", import.meta.url)));
 const character = normalizeCharacter(spec, JSON.parse(fs.readFileSync(new URL("./fixtures/sample-character.json", import.meta.url), "utf8")));
 const html = (shown = []) => { const r = renderSheet({ spec, character, shown: new Set(shown) }); return r.header + r.body; };
 const tag = (src, re) => src.match(re)?.[0] ?? "";

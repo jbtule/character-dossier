@@ -1,6 +1,6 @@
 # System specs: CC0 1.0 Universal
 
-The files in this folder (`systems/<id>/system.json`) are not covered by the PolyForm Noncommercial License that covers the rest of this repository.
+The files in this folder (`systems/<id>/system.toml`, or `system.json`) are not covered by the PolyForm Noncommercial License that covers the rest of this repository.
 
 To the extent possible under law, James Tuley has waived all copyright and related or neighboring rights to the spec files in this folder, under the CC0 1.0 Universal public domain dedication below. Write, copy, change and share specs freely, for any purpose.
 

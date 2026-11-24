@@ -5,9 +5,11 @@ import {
   blankCharacter, normalizeCharacter, computeSheet, evaluateInSheet, trackerMax, skillPool,
   isCareerSkill, derivedOrder, interpolate,
 } from "../src/engine/sheet.js";
+import { fileURLToPath } from "node:url";
+import { loadSpecFile } from "../tools/spec-file.mjs";
 
 const load = (p) => JSON.parse(fs.readFileSync(new URL(p, import.meta.url)));
-const eote = load("../systems/eote/system.json");
+const eote = loadSpecFile(fileURLToPath(new URL("../systems/eote/system.toml", import.meta.url)));
 const sample = normalizeCharacter(eote, load("./fixtures/sample-character.json"));
 const value = (sheet, id) => {
   assert.equal(sheet.derived[id].status, "ok", `${id}: ${sheet.derived[id].error ?? sheet.derived[id].status}`);

@@ -2,13 +2,24 @@
 
 ## Goal
 
-One engine, many games. Adding a new game should mean writing a new `system.json`, not changing engine code. Adding a character should mean writing a new character file.
+One engine, many games. Adding a new game should mean writing a new `system.toml`, not changing engine code. Adding a character should mean writing a new character file.
 
 ## Three layers
 
-1. **System spec** (`systems/<id>/system.json`): the rules. Character fields, characteristics, skills and which characteristic each uses, derived values as formulas, the dice-pool rule, trackers, list definitions (weapons, talents, gear…), and the sheet layout. A spec can also carry a `disclaimer`: plain text with the game's trademark and affiliation notice, shown in the system picker and the sheet footer. Each game's owners differ, so the notice belongs to the spec, not the engine.
+1. **System spec** (`systems/<id>/system.toml`): the rules. Character fields, characteristics, skills and which characteristic each uses, derived values as formulas, the dice-pool rule, trackers, list definitions (weapons, talents, gear…), and the sheet layout. A spec can also carry a `disclaimer`: plain text with the game's trademark and affiliation notice, shown in the system picker and the sheet footer. Each game's owners differ, so the notice belongs to the spec, not the engine.
 2. **Character file** (any path, e.g. `local/<name>.json`): one character's data. Character files are user data and aren't stored in the repo, except the test fixture in `tests/fixtures/`. Refers to spec entries by id where the spec defines them (`"skill": "rangedHeavy"`); things the spec doesn't catalog (species, career) are plain text.
 3. **Engine**: loads both, evaluates formulas, renders widgets, handles edits and saving.
+
+### Spec format: TOML
+
+Specs are written in TOML so people can read, comment and edit them by hand. The browser never parses TOML: the build converts each spec to JSON, so the engine and app only see plain objects. TOML dates become ISO strings in that conversion, and a folder with both `system.toml` and `system.json` is an error. Plain JSON specs still work.
+
+Conventions that keep specs readable:
+
+- Short records (characteristics, skills, list fields, top-level fields) are inline tables, one per line, aligned like a table.
+- Formulas that contain double quotes use single-quoted literal strings: `formula = 'brawn + sumOf("gear", "wornSoak")'`.
+- Explanations are `#` comments next to the section they describe.
+- Top-level arrays come before the first `[table]`, which TOML requires; `layout` goes last as `[[layout]]` blocks.
 
 ### Code layout
 
@@ -18,9 +29,10 @@ One engine, many games. Adding a new game should mean writing a new `system.json
 | `src/engine/sheet.js` | Game-agnostic logic: blank characters, item formulas, derived values, tracker maximums, dice pools. No DOM; tested in Node |
 | `src/render.js` | One function per layout widget type, plus computed outputs (`data-out`) that refresh while typing |
 | `src/app.js`, `src/storage.js` | System picker, saved characters, import/export, edit handling |
-| `tools/build.mjs` | Builds `dist/`: copies `src/`, Filtrex and every `systems/<id>/system.json`, and writes `systems/index.json` for the picker |
+| `tools/build.mjs` | Builds `dist/`: copies `src/` and Filtrex, converts every `systems/<id>/system.toml` to `system.json`, and writes `systems/index.json` for the picker |
+| `tools/spec-file.mjs` | Reads a spec file (TOML, or JSON for older specs) for the build, tools and tests |
 
-Adding a game: add `systems/<id>/system.json` (its `id` must match the folder). The build picks it up and it appears in the picker. No engine changes.
+Adding a game: add `systems/<id>/system.toml` (its `id` must match the folder). The build picks it up and it appears in the picker. No engine changes.
 
 ### Character fields
 

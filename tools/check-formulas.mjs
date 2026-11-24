@@ -1,9 +1,10 @@
 // Evaluates a system spec against a character using the engine and prints derived values and dice pools.
-// Usage: node tools/check-formulas.mjs systems/eote/system.json tests/fixtures/sample-character.json
+// Usage: node tools/check-formulas.mjs systems/eote/system.toml tests/fixtures/sample-character.json
 import fs from "node:fs";
 import { computeSheet, normalizeCharacter, skillPool } from "../src/engine/sheet.js";
+import { loadSpecFile } from "./spec-file.mjs";
 
-const spec = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+const spec = loadSpecFile(process.argv[2]);
 const character = normalizeCharacter(spec, JSON.parse(fs.readFileSync(process.argv[3], "utf8")));
 const sheet = computeSheet(spec, character);
 
