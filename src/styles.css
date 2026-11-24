@@ -183,7 +183,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 footer .disclaimer,footer .license{flex-basis:100%;font-size:12px}
 footer .license a{color:inherit}
 footer>.note{flex-basis:100%}
-footer .badge{margin:4px auto 0}
+footer .badge{margin:0 auto}
+footer .storage{text-align:center;border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
 .dlg-actions{display:flex;justify-content:flex-end;gap:8px}
 .dlg-actions .btn{font-size:14px;padding:0 14px}
 .error{color:var(--red);font-size:14px}
