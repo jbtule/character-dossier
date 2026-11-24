@@ -182,6 +182,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .sys small.disclaimer{display:block;margin-top:6px;font-size:11px}
 footer .disclaimer,footer .license{flex-basis:100%;font-size:12px}
 footer .license a{color:inherit}
+footer>.note{flex-basis:100%}
+footer .badge{margin:4px auto 0}
 .dlg-actions{display:flex;justify-content:flex-end;gap:8px}
 .dlg-actions .btn{font-size:14px;padding:0 14px}
 .error{color:var(--red);font-size:14px}
